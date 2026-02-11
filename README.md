@@ -1,9 +1,23 @@
 # Quizzy - Your Personal Quiz Generator
 
-## Overview
-Quizzy is a modern, responsive web application built with Streamlit that generates personalized quizzes from your dataset. It supports multiple quiz modes (Chinese to English, English to Chinese, Pinyin to Chinese) and provides an interactive, professional interface for learning and testing.
+## 🎮 Now with Multiplayer Mode!
 
-## Features
+**NEW:** Kahoot-style multiplayer quizzes with QR codes, live leaderboards, and competitive scoring!
+
+## Overview
+Quizzy is a modern, responsive web application built with Streamlit that generates personalized quizzes from your dataset. Choose between solo practice or host multiplayer games with real-time competition!
+
+## ✨ Features
+
+### 🎮 Multiplayer Mode (NEW!)
+- **Host Games**: Create sessions with QR codes and 6-digit PINs
+- **Join Anywhere**: Players join via QR scan or manual PIN entry
+- **Live Leaderboard**: Real-time rankings with animated displays
+- **Speed Scoring**: Bonus points for faster answers (up to 1500 pts per question)
+- **Game Control**: Hosts manage question flow and player experience
+- **Mobile-Ready**: Works on phones, tablets, and desktops
+
+### 📚 Solo Practice Mode
 - 📁 **Dataset Upload**: Support for CSV and Excel files
 - 🎯 **Multiple Quiz Modes**: Chinese↔English, Pinyin→Chinese
 - 📊 **Customizable Questions**: Choose number of questions from your dataset
@@ -12,7 +26,7 @@ Quizzy is a modern, responsive web application built with Streamlit that generat
 - 📈 **Progress Tracking**: Real-time score and progress display
 - 🔄 **Sample Data**: Built-in sample dataset for quick testing
 
-## Quick Start
+## 🚀 Quick Start
 1. **Setup Environment**:
    ```powershell
    .\setup.ps1 -InstallOnly   # Windows PowerShell
@@ -28,17 +42,64 @@ Quizzy is a modern, responsive web application built with Streamlit that generat
    ```bash
    streamlit run app.py
    ```
-   Or use: `.\setup.ps1 -Run`
+   Or use: `.\setup.ps1 -Run` (Windows)
+   Or use: `bash start.sh` (Linux/Mac)
 
-3. **Use the App**:
-   - Upload your CSV/Excel file with columns: `chinese`, `pinyin`, `english`
-   - Select quiz mode and number of questions
-   - Answer all questions in one go
-   - View your results and score
+3. **Choose Your Mode**:
+   - **📚 Solo Practice**: Traditional quiz mode at your own pace
+   - **🎮 Host Multiplayer**: Create a game session for others to join
+   - **👥 Join Game**: Enter a PIN to join an existing game
 
-## Workflow
+## 🎮 Multiplayer Guide
 
-### 1. Data Upload Phase
+### Hosting a Game
+1. Select "Host Multiplayer" from the main menu
+2. Load your dataset (sample or upload custom)
+3. Configure game settings (questions, mode, time limit)
+4. Click "Create Game Session"
+5. Share the QR code or 6-digit PIN with players
+6. Wait for players to join the lobby
+7. Click "Start Game" when ready
+8. Advance through questions at your pace
+9. View final results and leaderboard
+
+### Joining a Game
+1. Select "Join Game" from the main menu
+2. Enter the 6-digit PIN or scan QR code
+3. Type your name
+4. Wait in the lobby for host to start
+5. Answer questions quickly for bonus points
+6. See your live ranking
+7. Celebrate if you win! 🏆
+
+### Scoring System
+- **Correct Answer**: 1,000 base points
+- **Speed Bonus**: Up to 500 additional points
+  - Full bonus if answered within 2 seconds
+  - Decreases based on time taken
+- **Total**: Up to 1,500 points per question!
+
+## 📱 Use Cases
+
+### For Teachers
+- Create engaging classroom quizzes
+- Track student participation in real-time
+- Review results to identify learning gaps
+- Make learning fun and competitive
+
+### For Study Groups
+- Test each other's knowledge
+- Compete for top scores
+- Practice vocabulary together
+- Track group progress
+
+### For Self-Study
+- Practice at your own pace
+- Review mistakes
+- Build confidence with repetition
+- Track personal improvement
+
+## Dataset Format
 - User uploads CSV/Excel file or loads sample data
 - App validates and previews the dataset
 - User selects quiz mode and question count

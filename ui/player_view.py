@@ -10,17 +10,47 @@ def render_player_join():
     
     st.markdown("<div class='app-title'>🎮 Join a Quiz Game 🎮</div>", unsafe_allow_html=True)
     
+    # Responsive styles
+    st.markdown("""
+    <style>
+    .join-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin: 15px 0;
+    }
+    .pin-input {
+        font-size: 24px;
+        text-align: center;
+        letter-spacing: 5px;
+    }
+    @media (max-width: 768px) {
+        .join-card {
+            padding: 20px;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Check if session_id is in query params
     query_params = st.query_params
     session_id_from_url = query_params.get("session", None)
     
-    col1, col2 = st.columns([2, 1])
+    # Back button
+    if st.button("← Back to Mode Select"):
+        st.session_state.page = "mode_select"
+        st.rerun()
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([3, 2])
     
     with col1:
         st.markdown("""
-        <div class='upload-card'>
-        <h3>📱 Enter Game PIN</h3>
-        <p>Enter the 6-digit game PIN shown by your host</p>
+        <div class='join-card'>
+        <h3 style='color: #667eea;'>📱 Enter Game PIN</h3>
+        <p>Enter the 6-digit PIN shown by your host</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -29,19 +59,21 @@ def render_player_join():
             value=session_id_from_url if session_id_from_url else "",
             max_chars=6,
             placeholder="123456",
-            key="join_session_id"
+            key="join_session_id",
+            help="Ask your host for the 6-digit game PIN"
         )
         
         player_name = st.text_input(
             "Your Name",
             placeholder="Enter your name",
             max_chars=30,
-            key="join_player_name"
+            key="join_player_name",
+            help="This name will be shown on the leaderboard"
         )
         
         st.markdown("---")
         
-        if st.button("🚀 Join Game", type="primary", use_container_width=True):
+        if st.button("🚀 Join Game", type="primary", use_container_width=True, key="join_btn"):
             if not session_id or len(session_id) != 6:
                 st.error("❌ Please enter a valid 6-digit game PIN")
                 return
@@ -71,25 +103,26 @@ def render_player_join():
             st.session_state.player_name = player_name.strip()
             st.session_state.current_session_id = session_id
             st.session_state.page = "player_lobby"
+            st.success("✅ Joined successfully!")
             st.rerun()
     
     with col2:
         st.markdown("""
-        <div class='upload-card'>
+        <div class='join-card'>
         <h4>🎯 How to Play</h4>
         <ol>
-            <li>Enter the game PIN</li>
+            <li>Enter the 6-digit PIN</li>
             <li>Type your name</li>
-            <li>Wait for host to start</li>
-            <li>Answer questions fast!</li>
-            <li>Earn bonus points for speed</li>
+            <li>Wait for host</li>
+            <li>Answer fast!</li>
+            <li>Win prizes!</li>
         </ol>
         <br>
         <h4>🏆 Scoring</h4>
         <ul>
-            <li>✅ Correct: 1000 points</li>
-            <li>⚡ Speed bonus: up to 500 points</li>
-            <li>❌ Wrong: 0 points</li>
+            <li>✅ Correct: 1000 pts</li>
+            <li>⚡ Speed bonus: +500 pts</li>
+            <li>❌ Wrong: 0 pts</li>
         </ul>
         </div>
         """, unsafe_allow_html=True)
