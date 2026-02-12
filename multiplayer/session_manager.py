@@ -6,9 +6,14 @@ from typing import Dict, List, Optional
 import streamlit as st
 
 
-@st.cache_resource
+@st.cache_resource(hash_funcs={SessionManager: lambda _: None})
 def get_global_session_manager():
-    """Get the global session manager singleton shared across all users"""
+    """Get the global session manager singleton shared across all users
+    
+    Note: If you change the SessionManager signature, you must:
+    1. Restart the Streamlit server, OR
+    2. Clear cache with: st.cache_resource.clear()
+    """
     return SessionManager()
 
 
