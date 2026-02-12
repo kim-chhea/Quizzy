@@ -21,11 +21,8 @@ class GameSession:
         self.quiz_settings = quiz_settings
         self.questions = questions
         self.players: Dict[str, dict] = {}  # player_id -> player_data
-        self.current_question = 0
         self.status = "waiting"  # waiting, playing, finished
         self.created_at = datetime.now()
-        self.question_start_time = None
-        self.answers_submitted: Dict[str, dict] = {}  # player_id -> answer_data
         
     def _generate_session_id(self) -> str:
         """Generate a unique 6-character session ID"""
@@ -52,17 +49,6 @@ class GameSession:
             self.players[player_id]["current_question"] = 0
             self.players[player_id]["finished"] = False
             self.players[player_id]["start_time"] = time.time()
-    
-    def next_question(self):
-        """Move to the next question"""
-        if self.current_question < len(self.questions) - 1:
-            self.current_question += 1
-            self.question_start_time = time.time()
-            self.answers_submitted = {}
-            return True
-        else:
-            self.status = "finished"
-            return False
     
     def submit_answer(self, player_id: str, question_num: int, answer: str):
         """Submit an answer for a player at their current question"""
@@ -133,19 +119,6 @@ class GameSession:
             player["rank"] = i + 1
         
         return leaderboard
-    
-    def get_current_question_stats(self) -> dict:
-        """Get statistics for current question"""
-        total_players = len(self.players)
-        answered = len(self.answers_submitted)
-        correct = sum(1 for a in self.answers_submitted.values() if a["is_correct"])
-        
-        return {
-            "total_players": total_players,
-            "answered": answered,
-            "correct": correct,
-            "waiting": total_players - answered,
-        }
 
 
 class SessionManager:
