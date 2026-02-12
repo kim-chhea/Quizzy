@@ -39,21 +39,58 @@ def inject_ui():
       .step-progress > .bar { height: 100%; width: 30%; background: linear-gradient(90deg,var(--chinese-gold),var(--chinese-red)); border-radius: 8px }
 
       /* Upload card */
-      .upload-card { padding: 20px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.03); }
-      .upload-drop { border: 2px dashed rgba(255,255,255,0.06); padding: 18px; border-radius: 8px; text-align: center; color: var(--muted); }
+      .upload-card { 
+        padding: 30px; 
+        border-radius: 16px; 
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08)); 
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        margin: 20px 0;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .upload-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      }
+      .upload-drop { 
+        border: 3px dashed rgba(102, 126, 234, 0.3); 
+        padding: 30px; 
+        border-radius: 12px; 
+        text-align: center; 
+        color: var(--muted);
+        background: rgba(102, 126, 234, 0.05);
+        transition: all 0.3s ease;
+      }
+      .upload-drop:hover {
+        border-color: rgba(102, 126, 234, 0.6);
+        background: rgba(102, 126, 234, 0.1);
+      }
       .upload-drop .hint { margin-top: 10px; color: var(--muted); }
-      .chinese-welcome { text-align: center; font-size: 18px; color: var(--chinese-gold); margin-bottom: 20px; font-weight: 600; }
+      .chinese-welcome { text-align: center; font-size: 20px; color: var(--chinese-gold); margin-bottom: 20px; font-weight: 600; }
 
       /* Preview table look */
       .stDataFrame table { border-collapse: collapse; }
 
       /* Input fields */
       .stTextInput input, .stNumberInput input, .stSelectbox select {
-        background: var(--card);
-        color: var(--text);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 8px;
-        padding: 10px;
+        background: rgba(26, 26, 26, 0.8) !important;
+        color: var(--text) !important;
+        border: 2px solid rgba(102, 126, 234, 0.3) !important;
+        border-radius: 12px !important;
+        padding: 14px !important;
+        font-size: 16px !important;
+        transition: all 0.3s ease !important;
+      }
+      .stTextInput input:focus, .stNumberInput input:focus, .stSelectbox select:focus {
+        border-color: rgba(102, 126, 234, 0.8) !important;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+        outline: none !important;
+      }
+      .stTextInput label, .stNumberInput label, .stSelectbox label {
+        color: var(--text) !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        margin-bottom: 8px !important;
       }
 
       /* Large start button */
@@ -66,23 +103,26 @@ def inject_ui():
 
       /* Buttons (primary styled Chinese red/gold) */
       .stButton>button, button, .stFormSubmitButton button {
-        background: linear-gradient(135deg, var(--chinese-red), var(--chinese-gold));
-        color: white;
-        border-radius: 12px;
-        padding: 12px 20px;
-        font-weight: 600;
-        border: none;
-        box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
+        background: linear-gradient(135deg, var(--chinese-red), var(--chinese-gold)) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 14px 24px !important;
+        font-weight: 600 !important;
+        border: none !important;
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4) !important;
+        transition: all 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
+        font-size: 16px !important;
       }
       .stButton>button:hover, button:hover, .stFormSubmitButton button:hover { 
-        transform: translateY(-2px); 
-        box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4);
-        background: linear-gradient(135deg, var(--chinese-gold), var(--chinese-red));
+        transform: translateY(-3px) !important; 
+        box-shadow: 0 10px 28px rgba(220, 38, 38, 0.5) !important;
+        background: linear-gradient(135deg, var(--chinese-gold), var(--chinese-red)) !important;
       }
-      .stButton>button:active, button:active { transform: translateY(0px); }
+      .stButton>button:active, button:active { 
+        transform: translateY(0px) !important; 
+      }
 
       /* Processing state: show spinner and prevent further clicks */
       .stButton>button.processing, button.processing {
@@ -105,7 +145,23 @@ def inject_ui():
       @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
       /* Radio/options spacing */
-      .stRadio>div, .stRadio>label { margin-bottom: 6px; }
+      .stRadio>div, .stRadio>label { 
+        margin-bottom: 10px; 
+      }
+      .stRadio > div[role="radiogroup"] > label {
+        background: rgba(102, 126, 234, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .stRadio > div[role="radiogroup"] > label:hover {
+        background: rgba(102, 126, 234, 0.2);
+        border-color: rgba(102, 126, 234, 0.5);
+        transform: translateX(5px);
+      }
 
       /* Larger readable text */
       .stText, .stMarkdown { font-size: 16px; }
@@ -115,8 +171,8 @@ def inject_ui():
         .app-title { font-size: 28px; }
         .quiz-container { max-width: 90%; }
         .question-card { padding: 18px; }
-        .upload-card { padding: 18px; }
-        .stButton>button, button, .stFormSubmitButton button { padding: 10px 18px; font-size: 16px; }
+        .upload-card { padding: 24px; }
+        .stButton>button, button, .stFormSubmitButton button { padding: 12px 20px; font-size: 16px; }
       }
 
       @media (max-width: 768px) {
@@ -124,20 +180,22 @@ def inject_ui():
         .quiz-container { max-width: 95%; margin: 4px auto 16px; }
         .question-card { padding: 16px; margin-bottom: 16px; }
         .question-title { font-size: 18px; margin-bottom: 8px; }
-        .upload-card { padding: 16px; }
-        .upload-drop { padding: 12px; }
+        .upload-card { padding: 20px; }
+        .upload-drop { padding: 16px; }
         .step-progress { width: 90%; }
-        .stButton>button, button, .stFormSubmitButton button { padding: 8px 12px; font-size: 14px; }
-        .stTextInput input, .stNumberInput input, .stSelectbox select { padding: 8px; font-size: 14px; }
+        .stButton>button, button, .stFormSubmitButton button { padding: 10px 16px; font-size: 14px; }
+        .stTextInput input, .stNumberInput input, .stSelectbox select { padding: 10px; font-size: 14px; }
+        .stRadio > div[role="radiogroup"] > label { padding: 12px; }
       }
 
       @media (max-width: 480px) {
         .app-title { font-size: 20px; }
         .question-card { padding: 12px; }
-        .upload-card { padding: 12px; }
-        .stButton>button, button, .stFormSubmitButton button { padding: 6px 10px; font-size: 12px; }
-        .stTextInput input, .stNumberInput input, .stSelectbox select { padding: 6px; font-size: 12px; }
+        .upload-card { padding: 16px; }
+        .stButton>button, button, .stFormSubmitButton button { padding: 8px 12px; font-size: 13px; }
+        .stTextInput input, .stNumberInput input, .stSelectbox select { padding: 8px; font-size: 13px; }
         .stText, .stMarkdown { font-size: 14px; }
+        .stRadio > div[role="radiogroup"] > label { padding: 10px; font-size: 13px; }
       }
 
     </style>

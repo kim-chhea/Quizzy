@@ -61,66 +61,123 @@ def render_mode_select():
     st.markdown("<div class='app-title'>🌟 Quizzy - Your Personal Quiz Generator 🎯</div>", unsafe_allow_html=True)
     
     st.markdown("""
-    <div style='text-align: center; padding: 20px;'>
-    <p style='font-size: 20px;'>Choose your game mode</p>
+    <style>
+    .mode-card {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        min-height: 380px;
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transition: all 0.4s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .mode-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        border-color: rgba(102, 126, 234, 0.6);
+    }
+    .mode-card h2 {
+        font-size: 64px;
+        margin: 20px 0;
+    }
+    .mode-card h3 {
+        color: #667eea;
+        font-size: 26px;
+        margin-bottom: 15px;
+    }
+    .mode-card p {
+        color: #a1a1aa;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+    .mode-card ul {
+        text-align: left;
+        color: #fafafa;
+        font-size: 15px;
+        line-height: 2;
+        list-style-type: none;
+        padding: 0;
+    }
+    .mode-card ul li:before {
+        content: "✓ ";
+        color: #fbbf24;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+    </style>
+    
+    <div style='text-align: center; padding: 30px 20px;'>
+    <p style='font-size: 24px; color: #fbbf24; font-weight: 600;'>Choose Your Game Mode</p>
+    <p style='font-size: 16px; color: #a1a1aa;'>Select how you want to play and start learning!</p>
     </div>
     """, unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3, gap="large")
     
     with col1:
         st.markdown("""
-        <div class='upload-card' style='text-align: center; min-height: 300px;'>
+        <div class='mode-card'>
+        <div>
         <h2>📚</h2>
         <h3>Solo Practice</h3>
         <p>Practice at your own pace with customizable quizzes</p>
-        <br>
-        <ul style='text-align: left;'>
+        <ul>
         <li>Self-paced learning</li>
         <li>Review mistakes</li>
         <li>Track progress</li>
+        <li>No time pressure</li>
         </ul>
         </div>
+        </div>
         """, unsafe_allow_html=True)
-        if st.button("🎯 Start Solo", use_container_width=True, type="primary"):
+        if st.button("🎯 Start Solo", use_container_width=True, type="primary", key="solo_btn"):
             st.session_state.game_mode = "single"
             st.session_state.page = "upload"
             st.rerun()
     
     with col2:
         st.markdown("""
-        <div class='upload-card' style='text-align: center; min-height: 300px;'>
+        <div class='mode-card'>
+        <div>
         <h2>🎮</h2>
         <h3>Host Multiplayer</h3>
         <p>Create a game session and compete with friends!</p>
-        <br>
-        <ul style='text-align: left;'>
+        <ul>
         <li>Real-time competition</li>
         <li>QR code joining</li>
         <li>Live leaderboard</li>
+        <li>Control the game</li>
         </ul>
         </div>
+        </div>
         """, unsafe_allow_html=True)
-        if st.button("🚀 Host Game", use_container_width=True, type="primary"):
+        if st.button("🚀 Host Game", use_container_width=True, type="primary", key="host_btn"):
             st.session_state.game_mode = "host"
             st.session_state.page = "upload"
             st.rerun()
     
     with col3:
         st.markdown("""
-        <div class='upload-card' style='text-align: center; min-height: 300px;'>
+        <div class='mode-card'>
+        <div>
         <h2>👥</h2>
         <h3>Join Game</h3>
-        <p>Join an existing game with a code or QR scan</p>
-        <br>
-        <ul style='text-align: left;'>
+        <p>Join an existing game with a PIN and compete!</p>
+        <ul>
         <li>Quick join with PIN</li>
         <li>Compete for top rank</li>
         <li>Earn bonus points</li>
+        <li>Speed matters!</li>
         </ul>
         </div>
+        </div>
         """, unsafe_allow_html=True)
-        if st.button("📱 Join Game", use_container_width=True, type="primary"):
+        if st.button("📱 Join Game", use_container_width=True, type="primary", key="join_btn"):
             st.session_state.game_mode = "player"
             st.session_state.page = "player_join"
             st.rerun()
