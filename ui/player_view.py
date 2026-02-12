@@ -358,10 +358,18 @@ def render_player_game():
     
     from multiplayer.session_manager import get_global_session_manager
     session_manager = get_global_session_manager()
+    
+    # Debug output
+    st.info(f"🔍 DEBUG: Session ID = {st.session_state.current_session_id}")
+    st.info(f"🔍 DEBUG: Session Manager = {type(session_manager)}")
+    
     session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
+        st.write(f"Available sessions: {list(session_manager.sessions.keys())}")
         return
+    
+    st.success(f"✅ Session found! Type: {type(session)}")
     
     player_id = st.session_state.get("player_id")
     if not player_id or player_id not in session.players:
@@ -408,18 +416,38 @@ def render_player_game():
             submit_button = st.form_submit_button("✅ Submit Answer", use_container_width=True, type="primary")
             
             if submit_button:
-                success = session.submit_answer(player_id, current_q, selected_answer)
-                if success:
-                    # Show feedback
-                    is_correct = selected_answer == question["correct_answer"]
-                    if is_correct:
-                        st.success("🎉 Correct!")
-                    else:
-                        st.error(f"❌ Wrong! Correct answer: {question['correct_answer']}")
-                    time.sleep(1)
-                    st.rerun()
+                # Validate inputs before submission
+                if not selected_answer:
+                    st.error("Please select an answer!")
+                elif not player_id:
+                    st.error("Player ID not found!")
+                elif current_q is None:
+                    st.error("Question number invalid!")
+                elif not session:
+                    st.error("Session not found!")
+                elif not hasattr(session, 'submit_answer'):
+                    st.error("Session object is invalid!")
                 else:
-                    st.error("Failed to submit answer!")
+                    try:
+                        # Debug info
+                        st.write(f"DEBUG: player_id={player_id}, question={current_q}, answer={selected_answer[:20] if len(selected_answer) > 20 else selected_answer}")
+                        
+                        success = session.submit_answer(player_id, current_q, selected_answer)
+                        if success:
+                            # Show feedback
+                            is_correct = selected_answer == question.get("correct_answer")
+                            if is_correct:
+                                st.success("🎉 Correct!")
+                            else:
+                                st.error(f"❌ Wrong! Correct answer: {question.get('correct_answer', 'N/A')}")
+                            time.sleep(1)
+                            st.rerun()
+                        else:
+                            st.error("Failed to submit answer! Please try again.")
+                    except Exception as e:
+                        st.error(f"Error submitting answer: {str(e)}")
+                        import traceback
+                        st.code(traceback.format_exc())
     
     with col2:
         # Player stats
