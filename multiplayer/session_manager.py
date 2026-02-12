@@ -39,15 +39,19 @@ class GameSession:
             "score": 0,
             "answers": [],
             "joined_at": datetime.now(),
+            "current_question": 0,  # Each player tracks their own progress
+            "finished": False,
         }
         return player_id
     
     def start_game(self):
         """Start the game"""
         self.status = "playing"
-        self.current_question = 0
-        self.question_start_time = time.time()
-        self.answers_submitted = {}
+        # Initialize each player's progress
+        for player_id in self.players:
+            self.players[player_id]["current_question"] = 0
+            self.players[player_id]["finished"] = False
+            self.players[player_id]["start_time"] = time.time()
     
     def next_question(self):
         """Move to the next question"""
@@ -60,17 +64,25 @@ class GameSession:
             self.status = "finished"
             return False
     
-    def submit_answer(self, player_id: str, answer: str):
-        """Submit an answer for a player"""
+    def submit_answer(self, player_id: str, question_num: int, answer: str):
+        """Submit an answer for a player at their current question"""
         if player_id not in self.players:
             return False
         
-        if player_id in self.answers_submitted:
-            return False  # Already answered
+        player = self.players[player_id]
         
-        question = self.questions[self.current_question]
+        # Check if this is the player's current question
+        if question_num != player["current_question"]:
+            return False
+        
+        # Check if already answered this question
+        answered_questions = [ans["question_num"] for ans in player["answers"]]
+        if question_num in answered_questions:
+            return False
+        
+        question = self.questions[question_num]
         is_correct = answer == question["correct_answer"]
-        time_taken = time.time() - self.question_start_time
+        time_taken = time.time() - player.get("start_time", time.time())
         
         # Calculate score: correct = 1000 points, bonus for speed (max 500 points)
         points = 0
@@ -80,21 +92,25 @@ class GameSession:
             speed_bonus = max(0, 500 - (time_taken * 50))
             points = int(base_points + speed_bonus)
         
-        self.answers_submitted[player_id] = {
-            "answer": answer,
-            "is_correct": is_correct,
-            "time_taken": time_taken,
-            "points": points,
-        }
-        
-        self.players[player_id]["score"] += points
-        self.players[player_id]["answers"].append({
-            "question_num": self.current_question,
+        # Record the answer
+        player["score"] += points
+        player["answers"].append({
+            "question_num": question_num,
             "answer": answer,
             "is_correct": is_correct,
             "time_taken": time_taken,
             "points": points,
         })
+        
+        # Move to next question
+        if player["current_question"] < len(self.questions) - 1:
+            player["current_question"] += 1
+            player["start_time"] = time.time()  # Reset timer for next question
+        else:
+            player["finished"] = True
+            # Check if all players are finished
+            if all(p["finished"] for p in self.players.values()):
+                self.status = "finished"
         
         return True
     

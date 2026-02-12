@@ -326,16 +326,18 @@ def render_host_lobby():
         """, unsafe_allow_html=True)
         
         if session.players:
-            # Display players in a grid
-            player_html = '<div class="player-grid">'
-            for player_id, player_data in session.players.items():
-                player_html += f"""
-                <div class='player-item'>
-                🎮 {player_data['name']}
-                </div>
-                """
-            player_html += '</div>'
-            st.markdown(player_html, unsafe_allow_html=True)
+            # Display players in a grid using st.columns
+            cols = st.columns(3)
+            for idx, (player_id, player_data) in enumerate(session.players.items()):
+                with cols[idx % 3]:
+                    st.markdown(f"""
+                    <div style='background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(220, 38, 38, 0.2)); 
+                                padding: 20px; margin: 10px 0; border-radius: 15px; text-align: center;
+                                border: 2px solid rgba(251, 191, 36, 0.4);'>
+                    <div style='font-size: 32px;'>🎮</div>
+                    <strong style='color: #fbbf24; font-size: 18px;'>{player_data['name']}</strong>
+                    </div>
+                    """, unsafe_allow_html=True)
         else:
             st.info("⏳ Waiting for players to join...")
             st.markdown("""
@@ -398,124 +400,209 @@ def render_host_game():
         st.error("Session expired!")
         return
     
+    # Check if all players finished
     if session.status == "finished":
         st.session_state.page = "host_results"
         st.rerun()
         return
     
-    current_q = session.current_question
-    question = session.questions[current_q]
     total_questions = len(session.questions)
     
-    st.markdown("<div class='app-title'>🎮 Game in Progress 🎮</div>", unsafe_allow_html=True)
+    st.markdown("<div class='app-title'>📊 Live Dashboard 📊</div>", unsafe_allow_html=True)
     
-    # Responsive styles
+    # Enhanced dashboard styles
     st.markdown("""
     <style>
-    .question-card {
-        background: white;
+    .dashboard-card {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        margin: 20px 0;
+        border: 2px solid rgba(102, 126, 234, 0.3);
+    }
+    .player-progress {
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(220, 38, 38, 0.15));
+        padding: 20px;
+        margin: 15px 0;
         border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        margin: 15px 0;
+        border: 2px solid rgba(251, 191, 36, 0.3);
+        transition: all 0.3s ease;
     }
-    .option-box {
-        background: #f0f2f6;
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 8px;
-        font-size: 18px;
-        transition: transform 0.2s;
-    }
-    .option-box:hover {
+    .player-progress:hover {
         transform: translateX(5px);
+        border-color: rgba(251, 191, 36, 0.6);
     }
-    .stats-box {
-        padding: 15px;
-        background: #e8f5e9;
-        border-radius: 8px;
-        margin: 15px 0;
+    .progress-bar-container {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        height: 30px;
+        overflow: hidden;
+        margin: 10px 0;
     }
-    @media (max-width: 768px) {
-        .question-card {
-            padding: 15px;
-        }
-        .option-box {
-            font-size: 16px;
-            padding: 12px;
-        }
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    .stat-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        margin: 5px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    .badge-score {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: white;
+    }
+    .badge-question {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+    .badge-finished {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+    .summary-box {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+        border-radius: 15px;
+        border: 2px solid rgba(16, 185, 129, 0.4);
+        margin: 10px 0;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Progress bar
-    progress = (current_q + 1) / total_questions
-    st.progress(progress)
-    st.markdown(f"### Question {current_q + 1} of {total_questions}")
+    # Summary stats
+    col1, col2, col3, col4 = st.columns(4)
     
-    col1, col2 = st.columns([2, 1], gap="large")
+    total_players = len(session.players)
+    finished_players = sum(1 for p in session.players.values() if p.get("finished", False))
+    avg_progress = sum(p.get("current_question", 0) for p in session.players.values()) / max(total_players, 1)
+    avg_score = sum(p["score"] for p in session.players.values()) / max(total_players, 1)
     
     with col1:
-        # Display question
         st.markdown(f"""
-        <div class='question-card'>
-        <h2 style='color: #667eea; margin-bottom: 20px;'>{question['question_text']}</h2>
-        """, unsafe_allow_html=True)
-        
-        for i, option in enumerate(question['options']):
-            st.markdown(f"""
-            <div class='option-box'>
-            <strong>{chr(65+i)}.</strong> {option}
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        # Question stats
-        stats = session.get_current_question_stats()
-        st.markdown(f"""
-        <div class='stats-box'>
-        <strong>📊 Response Stats:</strong><br>
-        ✅ Answered: <strong>{stats['answered']}/{stats['total_players']}</strong> • 
-        🎯 Correct: <strong>{stats['correct']}</strong>
+        <div class='summary-box'>
+        <h3 style='color: #667eea; margin: 0;'>👥 Players</h3>
+        <p style='font-size: 32px; font-weight: bold; color: #fbbf24; margin: 10px 0;'>{total_players}</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        # Mini leaderboard
-        st.markdown("### 🏆 Current Rankings")
+        st.markdown(f"""
+        <div class='summary-box'>
+        <h3 style='color: #667eea; margin: 0;'>✅ Finished</h3>
+        <p style='font-size: 32px; font-weight: bold; color: #10b981; margin: 10px 0;'>{finished_players}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown(f"""
+        <div class='summary-box'>
+        <h3 style='color: #667eea; margin: 0;'>📊 Avg Progress</h3>
+        <p style='font-size: 32px; font-weight: bold; color: #667eea; margin: 10px 0;'>{avg_progress:.1f}/{total_questions}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown(f"""
+        <div class='summary-box'>
+        <h3 style='color: #667eea; margin: 0;'>🏆 Avg Score</h3>
+        <p style='font-size: 32px; font-weight: bold; color: #fbbf24; margin: 10px 0;'>{avg_score:,.0f}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    # Player progress detail
+    st.markdown("<h2 style='color: #667eea;'>👥 Player Progress</h2>", unsafe_allow_html=True)
+    
+    # Sort players by progress (furthest first)
+    sorted_players = sorted(
+        session.players.items(),
+        key=lambda x: (x[1].get("current_question", 0), x[1]["score"]),
+        reverse=True
+    )
+    
+    for player_id, player_data in sorted_players:
+        player_progress = player_data.get("current_question", 0)
+        player_finished = player_data.get("finished", False)
+        progress_pct = (player_progress / total_questions) * 100
+        
+        if player_finished:
+            progress_display = f"Completed All {total_questions} Questions!"
+            progress_pct = 100
+            status_badge = "<span class='stat-badge badge-finished'>✅ FINISHED</span>"
+        else:
+            progress_display = f"On Question {player_progress + 1} of {total_questions}"
+            status_badge = f"<span class='stat-badge badge-question'>📝 Q{player_progress + 1}</span>"
+        
+        st.markdown(f"""
+        <div class='player-progress'>
+        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;'>
+            <h3 style='color: #fbbf24; margin: 0;'>🎮 {player_data['name']}</h3>
+            <div>
+                {status_badge}
+                <span class='stat-badge badge-score'>💰 {player_data['score']:,} pts</span>
+            </div>
+        </div>
+        <div class='progress-bar-container'>
+            <div class='progress-bar-fill' style='width: {progress_pct}%;'>
+                {progress_pct:.0f}%
+            </div>
+        </div>
+        <p style='color: #a1a1aa; margin: 10px 0 0 0;'>{progress_display} • {len(player_data['answers'])} answered</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    # Leaderboard
+    col_left, col_right = st.columns([2, 1])
+    
+    with col_left:
+        st.markdown("### 🏆 Current Leaderboard")
         leaderboard = session.get_leaderboard()
-        render_mini_leaderboard(leaderboard, top_n=5)
+        render_mini_leaderboard(leaderboard, top_n=10)
+    
+    with col_right:
+        st.markdown("### ⚙️ Controls")
         
-        st.markdown("---")
-        
-        # Control buttons
         col_a, col_b = st.columns(2)
         with col_a:
-            if st.button("🔄 Refresh", use_container_width=True):
+            if st.button("🔄 Refresh", use_container_width=True, key="refresh_dashboard"):
                 st.rerun()
         
         with col_b:
-            # Auto-refresh toggle
-            if st.checkbox("Auto", value=False, help="Auto-refresh"):
-                import time
-                time.sleep(2)
-                st.rerun()
+            auto_refresh = st.checkbox("Auto", value=False, help="Auto-refresh every 3s", key="auto_refresh")
+        
+        if auto_refresh:
+            time.sleep(3)
+            st.rerun()
         
         st.markdown("---")
         
-        # Next question button
-        if current_q < total_questions - 1:
-            if st.button("➡️ Next Question", type="primary", use_container_width=True, key="next_q_btn"):
-                session.next_question()
-                st.rerun()
-            st.caption(f"{total_questions - current_q - 1} questions remaining")
-        else:
-            if st.button("🏁 Finish Game", type="primary", use_container_width=True, key="finish_btn"):
+        # End game button
+        if finished_players == total_players and total_players > 0:
+            st.success("🎉 All players finished!")
+            if st.button("🏁 End Game & View Results", type="primary", use_container_width=True, key="end_game_btn"):
                 session.status = "finished"
                 st.session_state.page = "host_results"
                 st.rerun()
-            st.caption("Last question!")
+        else:
+            st.info(f"⏳ {total_players - finished_players} player(s) still playing...")
+            if st.button("🏁 Force End Game", use_container_width=True, key="force_end_btn"):
+                session.status = "finished"
+                st.session_state.page = "host_results"
+                st.rerun()
 
 
 def render_host_results():

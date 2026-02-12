@@ -368,14 +368,16 @@ def render_player_game():
         st.error("Player not found in session!")
         return
     
-    # Check if game finished
-    if session.status == "finished":
+    player_data = session.players[player_id]
+    
+    # Check if player finished all questions
+    if player_data.get("finished", False):
         st.session_state.page = "player_results"
         st.rerun()
         return
     
-    player_data = session.players[player_id]
-    current_q = session.current_question
+    # Get player's current question
+    current_q = player_data.get("current_question", 0)
     question = session.questions[current_q]
     total_questions = len(session.questions)
     
@@ -388,40 +390,36 @@ def render_player_game():
     with col1:
         st.markdown(f"<h2 style='color: #667eea;'>❓ Question {current_q + 1} of {total_questions}</h2>", unsafe_allow_html=True)
         
-        # Check if player already answered
-        already_answered = player_id in session.answers_submitted
+        # Display question
+        st.markdown(f"""
+        <div class='game-card'>
+        <h2>{question['question_text']}</h2>
+        </div>
+        """, unsafe_allow_html=True)
         
-        if already_answered:
-            answer_data = session.answers_submitted[player_id]
-            st.markdown(f"""
-            <div class='answer-submitted'>
-            <h3>✅ Answer Submitted!</h3>
-            <p style='font-size: 20px; color: #fafafa; margin: 15px 0;'>Your answer: <strong style='color: #fbbf24;'>{answer_data['answer']}</strong></p>
-            <p style='font-size: 18px; color: #a1a1aa;'>Time: <strong>{answer_data['time_taken']:.2f}s</strong></p>
-            <p style='font-size: 16px; color: #667eea; margin-top: 20px;'>⏳ Waiting for other players...</p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            # Display question
-            st.markdown(f"""
-            <div class='game-card'>
-            <h2>{question['question_text']}</h2>
-            </div>
-            """, unsafe_allow_html=True)
+        # Answer options
+        with st.form(key=f"answer_form_{current_q}_{player_id}"):
+            selected_answer = st.radio(
+                "Choose your answer:",
+                question['options'],
+                key=f"player_answer_{current_q}_{player_id}"
+            )
             
-            # Answer options
-            with st.form(key=f"answer_form_{current_q}"):
-                selected_answer = st.radio(
-                    "Choose your answer:",
-                    question['options'],
-                    key=f"player_answer_{current_q}"
-                )
-                
-                submit_button = st.form_submit_button("✅ Submit Answer", use_container_width=True, type="primary")
-                
-                if submit_button:
-                    session.submit_answer(player_id, selected_answer)
+            submit_button = st.form_submit_button("✅ Submit Answer", use_container_width=True, type="primary")
+            
+            if submit_button:
+                success = session.submit_answer(player_id, current_q, selected_answer)
+                if success:
+                    # Show feedback
+                    is_correct = selected_answer == question["correct_answer"]
+                    if is_correct:
+                        st.success("🎉 Correct!")
+                    else:
+                        st.error(f"❌ Wrong! Correct answer: {question['correct_answer']}")
+                    time.sleep(1)
                     st.rerun()
+                else:
+                    st.error("Failed to submit answer!")
     
     with col2:
         # Player stats
@@ -430,7 +428,7 @@ def render_player_game():
         <h4>📊 Your Stats</h4>
         <p><strong>Score:</strong></p>
         <p style='font-size: 28px; color: #fbbf24;'>{player_data['score']:,}</p>
-        <p style='margin-top: 15px;'><strong>Answered:</strong></p>
+        <p style='margin-top: 15px;'><strong>Progress:</strong></p>
         <p>{len(player_data['answers'])}/{total_questions}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -448,12 +446,6 @@ def render_player_game():
                 </div>
                 """, unsafe_allow_html=True)
                 break
-        
-        # Auto-refresh if waiting
-        if player_id in session.answers_submitted:
-            st.markdown("---")
-            if st.button("🔄 Refresh", use_container_width=True):
-                st.rerun()
 
 
 def render_player_results():
