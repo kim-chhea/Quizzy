@@ -169,10 +169,9 @@ def render_host_setup():
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("🚀 Create Game Session", type="primary", use_container_width=True, key="create_session_btn"):
-            # Initialize session manager if not exists
-            if "session_manager" not in st.session_state:
-                from multiplayer.session_manager import SessionManager
-                st.session_state.session_manager = SessionManager()
+            # Get the global session manager
+            from multiplayer.session_manager import get_global_session_manager
+            session_manager = get_global_session_manager()
             
             # Generate questions
             quiz_settings = {
@@ -185,7 +184,7 @@ def render_host_setup():
                 questions = initialize_quiz(df, quiz_settings)
             
             # Create game session
-            session = st.session_state.session_manager.create_session(
+            session = session_manager.create_session(
                 host_name=host_name,
                 quiz_settings=quiz_settings,
                 questions=questions
@@ -226,14 +225,16 @@ def render_host_lobby():
     """Render the host lobby where players can join"""
     inject_ui()
     
-    if "session_manager" not in st.session_state or "current_session_id" not in st.session_state:
+    if "current_session_id" not in st.session_state:
         st.error("Session not found!")
         if st.button("← Go Back"):
             st.session_state.page = "mode_select"
             st.rerun()
         return
     
-    session = st.session_state.session_manager.get_session(st.session_state.current_session_id)
+    from multiplayer.session_manager import get_global_session_manager
+    session_manager = get_global_session_manager()
+    session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
         if st.button("← Go Back"):
@@ -375,7 +376,9 @@ def render_host_lobby():
             st.caption("⚠️ Need at least 1 player to start")
         
         if st.button("❌ Cancel Game", use_container_width=True):
-            st.session_state.session_manager.close_session(session.session_id)
+            from multiplayer.session_manager import get_global_session_manager
+            session_manager = get_global_session_manager()
+            session_manager.close_session(session.session_id)
             st.session_state.page = "host_setup"
             st.rerun()
 
@@ -384,11 +387,13 @@ def render_host_game():
     """Render the active game view for the host"""
     inject_ui()
     
-    if "session_manager" not in st.session_state or "current_session_id" not in st.session_state:
+    if "current_session_id" not in st.session_state:
         st.error("Session not found!")
         return
     
-    session = st.session_state.session_manager.get_session(st.session_state.current_session_id)
+    from multiplayer.session_manager import get_global_session_manager
+    session_manager = get_global_session_manager()
+    session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
         return
@@ -517,11 +522,13 @@ def render_host_results():
     """Render final results for host"""
     inject_ui()
     
-    if "session_manager" not in st.session_state or "current_session_id" not in st.session_state:
+    if "current_session_id" not in st.session_state:
         st.error("Session not found!")
         return
     
-    session = st.session_state.session_manager.get_session(st.session_state.current_session_id)
+    from multiplayer.session_manager import get_global_session_manager
+    session_manager = get_global_session_manager()
+    session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
         return

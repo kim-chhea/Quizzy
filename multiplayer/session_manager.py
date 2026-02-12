@@ -3,6 +3,13 @@ import string
 import time
 from datetime import datetime
 from typing import Dict, List, Optional
+import streamlit as st
+
+
+@st.cache_resource
+def get_global_session_manager():
+    """Get the global session manager singleton shared across all users"""
+    return SessionManager()
 
 
 class GameSession:

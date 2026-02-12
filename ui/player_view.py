@@ -122,12 +122,11 @@ def render_player_join():
                 st.error("❌ Please enter your name")
                 return
             
-            # Initialize session manager if not exists
-            if "session_manager" not in st.session_state:
-                from multiplayer.session_manager import SessionManager
-                st.session_state.session_manager = SessionManager()
+            # Get the global session manager
+            from multiplayer.session_manager import get_global_session_manager
+            session_manager = get_global_session_manager()
             
-            session = st.session_state.session_manager.get_session(session_id)
+            session = session_manager.get_session(session_id)
             
             if not session:
                 st.error("❌ Game not found! Please check the PIN")
@@ -212,14 +211,16 @@ def render_player_lobby():
     </style>
     """, unsafe_allow_html=True)
     
-    if "session_manager" not in st.session_state or "current_session_id" not in st.session_state:
+    if "current_session_id" not in st.session_state:
         st.error("Session not found!")
         if st.button("← Go Back"):
             st.session_state.page = "player_join"
             st.rerun()
         return
     
-    session = st.session_state.session_manager.get_session(st.session_state.current_session_id)
+    from multiplayer.session_manager import get_global_session_manager
+    session_manager = get_global_session_manager()
+    session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
         if st.button("← Go Back"):
@@ -351,11 +352,13 @@ def render_player_game():
     </style>
     """, unsafe_allow_html=True)
     
-    if "session_manager" not in st.session_state or "current_session_id" not in st.session_state:
+    if "current_session_id" not in st.session_state:
         st.error("Session not found!")
         return
     
-    session = st.session_state.session_manager.get_session(st.session_state.current_session_id)
+    from multiplayer.session_manager import get_global_session_manager
+    session_manager = get_global_session_manager()
+    session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
         return
@@ -508,11 +511,13 @@ def render_player_results():
     </style>
     """, unsafe_allow_html=True)
     
-    if "session_manager" not in st.session_state or "current_session_id" not in st.session_state:
+    if "current_session_id" not in st.session_state:
         st.error("Session not found!")
         return
     
-    session = st.session_state.session_manager.get_session(st.session_state.current_session_id)
+    from multiplayer.session_manager import get_global_session_manager
+    session_manager = get_global_session_manager()
+    session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
         return
