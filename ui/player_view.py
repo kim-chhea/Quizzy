@@ -124,7 +124,7 @@ def render_player_join():
             
             # Get the global session manager
             from multiplayer.session_manager import get_global_session_manager
-            session_manager = get_global_session_manager()
+            session_manager = get_global_session_manager("v2.0")
             
             session = session_manager.get_session(session_id)
             
@@ -219,7 +219,7 @@ def render_player_lobby():
         return
     
     from multiplayer.session_manager import get_global_session_manager
-    session_manager = get_global_session_manager()
+    session_manager = get_global_session_manager("v2.0")
     session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
@@ -357,7 +357,7 @@ def render_player_game():
         return
     
     from multiplayer.session_manager import get_global_session_manager
-    session_manager = get_global_session_manager()
+    session_manager = get_global_session_manager("v2.0")
     
     # Debug output
     st.info(f"🔍 DEBUG: Session ID = {st.session_state.current_session_id}")
@@ -536,7 +536,7 @@ def render_player_results():
         return
     
     from multiplayer.session_manager import get_global_session_manager
-    session_manager = get_global_session_manager()
+    session_manager = get_global_session_manager("v2.0")
     session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")

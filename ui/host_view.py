@@ -171,7 +171,7 @@ def render_host_setup():
         if st.button("🚀 Create Game Session", type="primary", use_container_width=True, key="create_session_btn"):
             # Get the global session manager
             from multiplayer.session_manager import get_global_session_manager
-            session_manager = get_global_session_manager()
+            session_manager = get_global_session_manager("v2.0")
             
             # Generate questions
             quiz_settings = {
@@ -233,7 +233,7 @@ def render_host_lobby():
         return
     
     from multiplayer.session_manager import get_global_session_manager
-    session_manager = get_global_session_manager()
+    session_manager = get_global_session_manager("v2.0")
     session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
@@ -379,7 +379,7 @@ def render_host_lobby():
         
         if st.button("❌ Cancel Game", use_container_width=True):
             from multiplayer.session_manager import get_global_session_manager
-            session_manager = get_global_session_manager()
+            session_manager = get_global_session_manager("v2.0")
             session_manager.close_session(session.session_id)
             st.session_state.page = "host_setup"
             st.rerun()
@@ -394,7 +394,7 @@ def render_host_game():
         return
     
     from multiplayer.session_manager import get_global_session_manager
-    session_manager = get_global_session_manager()
+    session_manager = get_global_session_manager("v2.0")
     session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
@@ -614,7 +614,7 @@ def render_host_results():
         return
     
     from multiplayer.session_manager import get_global_session_manager
-    session_manager = get_global_session_manager()
+    session_manager = get_global_session_manager("v2.0")
     session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")

@@ -7,8 +7,12 @@ import streamlit as st
 
 
 @st.cache_resource
-def get_global_session_manager():
-    """Get the global session manager singleton shared across all users"""
+def get_global_session_manager(_version: str = "v2.0"):
+    """Get the global session manager singleton shared across all users
+    
+    Args:
+        _version: Version parameter to force cache invalidation when signature changes
+    """
     return SessionManager()
 
 
