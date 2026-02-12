@@ -38,6 +38,7 @@ class GameSession:
             "joined_at": datetime.now(),
             "current_question": 0,  # Each player tracks their own progress
             "finished": False,
+            "start_time": time.time(),  # Initialize timer
         }
         return player_id
     
@@ -57,17 +58,29 @@ class GameSession:
         
         player = self.players[player_id]
         
+        # Ensure player has required fields
+        if "current_question" not in player:
+            player["current_question"] = 0
+        if "finished" not in player:
+            player["finished"] = False
+        if "start_time" not in player:
+            player["start_time"] = time.time()
+        
         # Check if this is the player's current question
         if question_num != player["current_question"]:
             return False
         
         # Check if already answered this question
-        answered_questions = [ans["question_num"] for ans in player["answers"]]
+        answered_questions = [ans.get("question_num", -1) for ans in player.get("answers", [])]
         if question_num in answered_questions:
             return False
         
+        # Validate question number
+        if question_num < 0 or question_num >= len(self.questions):
+            return False
+        
         question = self.questions[question_num]
-        is_correct = answer == question["correct_answer"]
+        is_correct = answer == question.get("correct_answer")
         time_taken = time.time() - player.get("start_time", time.time())
         
         # Calculate score: correct = 1000 points, bonus for speed (max 500 points)
@@ -79,7 +92,9 @@ class GameSession:
             points = int(base_points + speed_bonus)
         
         # Record the answer
-        player["score"] += points
+        player["score"] = player.get("score", 0) + points
+        if "answers" not in player:
+            player["answers"] = []
         player["answers"].append({
             "question_num": question_num,
             "answer": answer,
@@ -95,7 +110,7 @@ class GameSession:
         else:
             player["finished"] = True
             # Check if all players are finished
-            if all(p["finished"] for p in self.players.values()):
+            if all(p.get("finished", False) for p in self.players.values()):
                 self.status = "finished"
         
         return True
