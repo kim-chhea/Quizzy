@@ -386,6 +386,44 @@ def render_host_lobby():
             st.rerun()
 
 
+def _render_player_progress_card(player_data: dict, total_questions: int):
+    """Helper function to render a player progress card"""
+    player_progress = player_data.get("current_question", 0)
+    player_finished = player_data.get("finished", False)
+    progress_pct = (player_progress / total_questions) * 100
+    
+    if player_finished:
+        progress_display = f"Completed All {total_questions} Questions!"
+        progress_pct = 100
+        status_badge = "<span class='stat-badge badge-finished'>✅ FINISHED</span>"
+    else:
+        progress_display = f"On Question {player_progress + 1} of {total_questions}"
+        status_badge = f"<span class='stat-badge badge-question'>📝 Q{player_progress + 1}</span>"
+    
+    # Calculate accuracy for quick stats
+    correct = sum(1 for ans in player_data.get('answers', []) if ans.get('is_correct', False))
+    total_ans = len(player_data.get('answers', []))
+    accuracy = f"{(correct/total_ans*100):.0f}%" if total_ans > 0 else "N/A"
+    
+    st.markdown(f"""
+    <div class='player-progress'>
+    <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;'>
+        <h3 style='color: #fbbf24; margin: 0;'>🎮 {player_data['name']}</h3>
+        <div>
+            {status_badge}
+            <span class='stat-badge badge-score'>💰 {player_data['score']:,}</span>
+        </div>
+    </div>
+    <div class='progress-bar-container'>
+        <div class='progress-bar-fill' style='width: {progress_pct}%;'>
+            {progress_pct:.0f}%
+        </div>
+    </div>
+    <p style='color: #a1a1aa; margin: 10px 0 0 0;'>{progress_display} • Accuracy: {accuracy}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+
 def render_host_game():
     """Render the active game view for the host"""
     inject_ui()
@@ -523,46 +561,29 @@ def render_host_game():
     
     st.markdown("---")
     
-    # Player progress detail
-    st.markdown("<h2 style='color: #667eea;'>👥 Player Progress</h2>", unsafe_allow_html=True)
+    # Player progress detail - Use container for better performance
+    st.markdown("<h2 style='color: #667eea;'>👥 Live Player Progress</h2>", unsafe_allow_html=True)
     
-    # Sort players by progress (furthest first)
+    # Sort players by progress (furthest first) - calculate once
     sorted_players = sorted(
         session.players.items(),
         key=lambda x: (x[1].get("current_question", 0), x[1]["score"]),
         reverse=True
     )
     
-    for player_id, player_data in sorted_players:
-        player_progress = player_data.get("current_question", 0)
-        player_finished = player_data.get("finished", False)
-        progress_pct = (player_progress / total_questions) * 100
-        
-        if player_finished:
-            progress_display = f"Completed All {total_questions} Questions!"
-            progress_pct = 100
-            status_badge = "<span class='stat-badge badge-finished'>✅ FINISHED</span>"
-        else:
-            progress_display = f"On Question {player_progress + 1} of {total_questions}"
-            status_badge = f"<span class='stat-badge badge-question'>📝 Q{player_progress + 1}</span>"
-        
-        st.markdown(f"""
-        <div class='player-progress'>
-        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;'>
-            <h3 style='color: #fbbf24; margin: 0;'>🎮 {player_data['name']}</h3>
-            <div>
-                {status_badge}
-                <span class='stat-badge badge-score'>💰 {player_data['score']:,} pts</span>
-            </div>
-        </div>
-        <div class='progress-bar-container'>
-            <div class='progress-bar-fill' style='width: {progress_pct}%;'>
-                {progress_pct:.0f}%
-            </div>
-        </div>
-        <p style='color: #a1a1aa; margin: 10px 0 0 0;'>{progress_display} • {len(player_data['answers'])} answered</p>
-        </div>
-        """, unsafe_allow_html=True)
+    # Use columns for compact display
+    if len(sorted_players) > 4:
+        # Grid layout for many players
+        cols_per_row = 2
+        for i in range(0, len(sorted_players), cols_per_row):
+            cols = st.columns(cols_per_row)
+            for j, (player_id, player_data) in enumerate(sorted_players[i:i+cols_per_row]):
+                with cols[j]:
+                    _render_player_progress_card(player_data, total_questions)
+    else:
+        # Single column for few players
+        for player_id, player_data in sorted_players:
+            _render_player_progress_card(player_data, total_questions)
     
     st.markdown("---")
     
@@ -607,7 +628,7 @@ def render_host_game():
 
 
 def render_host_results():
-    """Render final results for host"""
+    """Render final results for host with detailed player analytics"""
     inject_ui()
     
     if "current_session_id" not in st.session_state:
@@ -627,6 +648,8 @@ def render_host_results():
     
     # Game stats summary
     leaderboard = session.get_leaderboard()
+    total_questions = len(session.questions)
+    
     if leaderboard:
         winner = leaderboard[0]
         st.markdown(f"""
@@ -643,13 +666,176 @@ def render_host_results():
     
     st.markdown("---")
     
+    # Detailed Player Performance Analytics
+    st.markdown("### 👥 Player Performance Details")
+    st.markdown("<p style='color: #a1a1aa; margin-bottom: 20px;'>Click on a player to view their detailed performance</p>", unsafe_allow_html=True)
+    
+    # Performance styles
+    st.markdown("""
+    <style>
+    .player-card {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-radius: 15px;
+        padding: 20px;
+        margin: 15px 0;
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+    .player-card:hover {
+        border-color: rgba(102, 126, 234, 0.6);
+        transform: translateY(-2px);
+    }
+    .stats-row {
+        display: flex;
+        justify-content: space-around;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+    .stat-box {
+        text-align: center;
+        padding: 15px;
+        border-radius: 10px;
+        min-width: 120px;
+        margin: 5px;
+    }
+    .stat-correct {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+        border: 2px solid rgba(16, 185, 129, 0.4);
+    }
+    .stat-incorrect {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+        border: 2px solid rgba(239, 68, 68, 0.4);
+    }
+    .stat-accuracy {
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+        border: 2px solid rgba(251, 191, 36, 0.4);
+    }
+    .stat-speed {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+        border: 2px solid rgba(102, 126, 234, 0.4);
+    }
+    .answer-item {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border-left: 4px solid;
+    }
+    .answer-correct {
+        border-left-color: #10b981;
+    }
+    .answer-incorrect {
+        border-left-color: #ef4444;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Display each player's detailed results
+    for idx, player_entry in enumerate(leaderboard, 1):
+        player_id = player_entry['player_id']
+        player_data = session.players[player_id]
+        player_name = player_data['name']
+        player_score = player_data['score']
+        player_answers = player_data.get('answers', [])
+        
+        # Calculate statistics
+        total_answered = len(player_answers)
+        correct_count = sum(1 for ans in player_answers if ans.get('is_correct', False))
+        incorrect_count = total_answered - correct_count
+        accuracy = (correct_count / total_answered * 100) if total_answered > 0 else 0
+        avg_time = sum(ans.get('time_taken', 0) for ans in player_answers) / total_answered if total_answered > 0 else 0
+        
+        # Rank badge color
+        rank_colors = {
+            1: "background: linear-gradient(135deg, #FFD700, #FFA500);",
+            2: "background: linear-gradient(135deg, #C0C0C0, #A8A8A8);",
+            3: "background: linear-gradient(135deg, #CD7F32, #B87333);"
+        }
+        rank_color = rank_colors.get(idx, "background: linear-gradient(135deg, #667eea, #764ba2);")
+        
+        with st.expander(f"#{idx} {player_name} - {player_score:,} points", expanded=(idx <= 3)):
+            # Summary statistics
+            st.markdown(f"""
+            <div class='stats-row'>
+                <div class='stat-box stat-correct'>
+                    <div style='font-size: 32px; font-weight: bold; color: #10b981;'>{correct_count}</div>
+                    <div style='color: #a1a1aa;'>Correct</div>
+                </div>
+                <div class='stat-box stat-incorrect'>
+                    <div style='font-size: 32px; font-weight: bold; color: #ef4444;'>{incorrect_count}</div>
+                    <div style='color: #a1a1aa;'>Incorrect</div>
+                </div>
+                <div class='stat-box stat-accuracy'>
+                    <div style='font-size: 32px; font-weight: bold; color: #fbbf24;'>{accuracy:.1f}%</div>
+                    <div style='color: #a1a1aa;'>Accuracy</div>
+                </div>
+                <div class='stat-box stat-speed'>
+                    <div style='font-size: 32px; font-weight: bold; color: #667eea;'>{avg_time:.1f}s</div>
+                    <div style='color: #a1a1aa;'>Avg Time</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("---")
+            st.markdown("#### 📝 Answer Details")
+            
+            # Show each answer
+            for ans in player_answers:
+                q_num = ans.get('question_num', 0)
+                question = session.questions[q_num] if q_num < len(session.questions) else {}
+                is_correct = ans.get('is_correct', False)
+                time_taken = ans.get('time_taken', 0)
+                points = ans.get('points', 0)
+                
+                # Get question text based on mode
+                mode = session.quiz_settings.get('mode', 'chinese_to_english')
+                if 'chinese' in mode:
+                    q_text = question.get('question', 'N/A')
+                else:
+                    q_text = question.get('question', 'N/A')
+                
+                correct_ans = question.get('correct_answer', 'N/A')
+                user_ans = ans.get('answer', 'N/A')
+                
+                status_icon = "✅" if is_correct else "❌"
+                status_class = "answer-correct" if is_correct else "answer-incorrect"
+                
+                st.markdown(f"""
+                <div class='answer-item {status_class}'>
+                    <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;'>
+                        <strong style='color: #fbbf24;'>{status_icon} Question {q_num + 1}</strong>
+                        <div>
+                            <span style='background: rgba(102, 126, 234, 0.3); padding: 4px 12px; border-radius: 12px; margin-right: 8px;'>
+                                ⏱️ {time_taken:.1f}s
+                            </span>
+                            <span style='background: rgba(251, 191, 36, 0.3); padding: 4px 12px; border-radius: 12px;'>
+                                💰 {points:,} pts
+                            </span>
+                        </div>
+                    </div>
+                    <div style='color: #fafafa; margin: 8px 0;'><strong>Q:</strong> {q_text}</div>
+                    <div style='color: {'#10b981' if is_correct else '#ef4444'}; margin: 4px 0;'>
+                        <strong>Their Answer:</strong> {user_ans}
+                    </div>
+                    {f"<div style='color: #10b981; margin: 4px 0;'><strong>Correct Answer:</strong> {correct_ans}</div>" if not is_correct else ''}
+                </div>
+                """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
     # Game statistics
     with st.expander("📈 Game Statistics"):
         total_players = len(session.players)
         total_questions = len(session.questions)
+        avg_accuracy = sum(
+            sum(1 for ans in p.get('answers', []) if ans.get('is_correct', False)) / max(len(p.get('answers', [])), 1) * 100
+            for p in session.players.values()
+        ) / max(total_players, 1)
+        
         st.markdown(f"""
         - **Total Players**: {total_players}
         - **Total Questions**: {total_questions}
+        - **Average Accuracy**: {avg_accuracy:.1f}%
         - **Quiz Mode**: {session.quiz_settings.get('mode', 'N/A')}
         - **Time per Question**: {session.quiz_settings.get('time_limit', 'N/A')}s
         - **Hosted by**: {session.host_name}

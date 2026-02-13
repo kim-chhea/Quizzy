@@ -59,17 +59,13 @@ class GameSession:
         """Submit an answer for a player at their current question"""
         # Validate input types
         if not isinstance(player_id, str):
-            print(f"Invalid player_id type: {type(player_id)}")
             return False
         if not isinstance(question_num, int):
-            print(f"Invalid question_num type: {type(question_num)}")
             return False
         if not isinstance(answer, str):
-            print(f"Invalid answer type: {type(answer)}")
             return False
             
         if player_id not in self.players:
-            print(f"Player {player_id} not found in session")
             return False
         
         player = self.players[player_id]
