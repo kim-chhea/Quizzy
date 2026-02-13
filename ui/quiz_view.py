@@ -6,22 +6,77 @@ from ui.theme import inject_ui
 def render_quiz():
     inject_ui()
 
-    # Add load data button near start
-    if st.button("🏠 Back to Settings"):
-        st.session_state.page = "upload"
-        st.rerun()
+    # Navigation buttons
+    st.markdown("""
+    <style>
+    .nav-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 1, 3])
+    with col1:
+        if st.button("🏠 HOME", use_container_width=True, key="home_quiz"):
+            st.session_state.page = "mode_select"
+            st.session_state.game_mode = None
+            st.rerun()
+    with col2:
+        if st.button("⚙️ SETTINGS", use_container_width=True, key="settings_quiz"):
+            st.session_state.page = "upload"
+            st.rerun()
 
     # Larger, cleaner UI for showing all questions at once
     st.markdown(
         """
     <style>
       .quiz-container { max-width: 1000px; margin: 8px auto 24px; }
-      .question-card { padding: 24px; border-radius: 12px; background: var(--streamlit-secondaryBackgroundColor); box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 24px; }
-      .question-title { font-size: 32px; font-weight: 700; margin-bottom: 15px; }
+      .question-card { 
+        padding: 24px; 
+        border-radius: 16px; 
+        background: linear-gradient(135deg, rgba(185, 28, 28, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
+        border: 2px solid rgba(251, 191, 36, 0.3);
+        box-shadow: 0 6px 20px rgba(185, 28, 28, 0.2); 
+        margin-bottom: 24px;
+        transition: all 0.3s ease;
+      }
+      .question-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(185, 28, 28, 0.3);
+        border-color: rgba(251, 191, 36, 0.5);
+      }
+      .question-title { 
+        font-size: 32px; 
+        font-weight: 700; 
+        margin-bottom: 15px;
+        color: #fbbf24;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
       .options { margin-left: 6px; font-size: 18px; }
-      .progress-area { color: var(--streamlit-primaryTextColor); font-size: 18px; }
+      .progress-area { 
+        color: #fef3c7; 
+        font-size: 18px;
+        font-weight: 700;
+        background: linear-gradient(135deg, rgba(185, 28, 28, 0.3) 0%, rgba(220, 38, 38, 0.3) 100%);
+        border: 2px solid rgba(251, 191, 36, 0.4);
+        border-radius: 12px;
+        padding: 12px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      }
       .finish-btn { margin-top: 20px; font-size: 18px; }
-      .stRadio label { font-size: 24px !important; font-weight: 600 !important; line-height: 1.5 !important; padding: 8px 0 !important; }
+      .stRadio label { 
+        font-size: 24px !important; 
+        font-weight: 600 !important; 
+        line-height: 1.5 !important; 
+        padding: 8px 0 !important;
+        transition: color 0.2s ease;
+      }
+      .stRadio label:hover {
+        color: #fbbf24 !important;
+      }
 
       /* Responsive design */
       @media (max-width: 768px) {
@@ -29,7 +84,7 @@ def render_quiz():
         .question-card { padding: 16px; margin-bottom: 16px; }
         .question-title { font-size: 24px; margin-bottom: 12px; }
         .stRadio label { font-size: 18px !important; padding: 6px 0 !important; }
-        .progress-area { font-size: 16px; }
+        .progress-area { font-size: 16px; padding: 10px; }
         .finish-btn { font-size: 16px; margin-top: 16px; }
       }
 
@@ -37,6 +92,7 @@ def render_quiz():
         .question-title { font-size: 20px; }
         .stRadio label { font-size: 16px !important; padding: 4px 0 !important; }
         .question-card { padding: 12px; }
+        .progress-area { font-size: 14px; padding: 8px; }
       }
     </style>
     """,
@@ -84,16 +140,18 @@ def render_quiz():
 
     st.markdown("<div class='quiz-container'>", unsafe_allow_html=True)
 
-    # Render all questions
+    # Render all questions - optimized with clear structure
     for i, q in enumerate(questions):
         st.markdown("<div class='question-card'>", unsafe_allow_html=True)
-        st.markdown(f"<div class='question-title'>{i+1}. {q['question_text']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='question-title'>❓ {i+1}. {q['question_text']}</div>", unsafe_allow_html=True)
         # larger radio options for easier clicking
         st.radio("Select answer", q["options"], key=f"answer_{i}", label_visibility="collapsed")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Finish button
-    finish = st.button("✅ Finish and Grade", type="primary")
+    # Finish button - centered and prominent
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        finish = st.button("✅ FINISH AND GRADE", type="primary", use_container_width=True, key="finish_quiz")
 
     if finish:
         quiz_data["score"] = 0

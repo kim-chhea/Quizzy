@@ -77,6 +77,12 @@ def inject_ui():
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         position: relative;
         overflow: hidden;
+        will-change: transform;
+      }
+      
+      .question-card:hover { 
+        transform: translateY(-4px) translateZ(0); 
+        box-shadow: 0 12px 40px rgba(220, 38, 38, 0.3), 0 0 30px rgba(251, 191, 36, 0.2); 
       }
       
       .question-card::before {
@@ -233,10 +239,11 @@ def inject_ui():
         font-weight: 600 !important;
         border: 2px solid rgba(251, 191, 36, 0.3) !important;
         box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4), 0 0 15px rgba(251, 191, 36, 0.2) !important;
-        transition: all 0.3s ease !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
         position: relative !important;
         overflow: hidden !important;
         font-size: 16px !important;
+        will-change: transform;
       }
       
       .stButton>button::before, button::before {
@@ -248,6 +255,7 @@ def inject_ui():
         height: 100%;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
         transition: left 0.5s;
+        will-change: left;
       }
       
       .stButton>button:hover::before, button:hover::before {
@@ -255,13 +263,13 @@ def inject_ui():
       }
       
       .stButton>button:hover, button:hover, .stFormSubmitButton button:hover { 
-        transform: translateY(-3px) !important; 
+        transform: translateY(-3px) translateZ(0) !important; 
         box-shadow: 0 10px 28px rgba(220, 38, 38, 0.5), 0 0 25px rgba(251, 191, 36, 0.3) !important;
         background: linear-gradient(135deg, var(--chinese-gold), var(--phoenix-orange), var(--chinese-red)) !important;
       }
       
       .stButton>button:active, button:active { 
-        transform: translateY(0px) !important; 
+        transform: translateY(0px) translateZ(0) !important; 
       }
 
       /* Processing state */

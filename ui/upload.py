@@ -23,6 +23,14 @@ def render_upload():
     st.markdown("<div class='app-title'>🌟 Quizzy - Your Personal Quiz Generator 🎯</div>", unsafe_allow_html=True)
     st.markdown("<div class='step-progress'><div class='bar'></div></div>", unsafe_allow_html=True)
 
+    # Back to home button
+    if st.button("🏠 BACK TO HOME", key="home_upload"):
+        st.session_state.page = "mode_select"
+        st.session_state.game_mode = None
+        st.rerun()
+    
+    st.markdown("---")
+
     st.markdown("<h3>🎯 Choose Your Learning Mode</h3>", unsafe_allow_html=True)
     col1, col2 = st.columns([2, 1])
 
