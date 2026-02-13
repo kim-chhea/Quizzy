@@ -63,14 +63,14 @@ def render_mode_select():
     st.markdown("""
     <style>
     .mode-card {
-        background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
-        border-radius: 20px;
-        padding: 30px;
+        background: linear-gradient(135deg, #b91c1c 0%, #dc2626 50%, #b91c1c 100%);
+        border-radius: 18px;
+        padding: 35px 25px;
         text-align: center;
-        min-height: 380px;
-        border: 3px solid rgba(251, 191, 36, 0.3);
-        box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3), 0 0 20px rgba(251, 191, 36, 0.1);
-        transition: all 0.4s ease;
+        min-height: 400px;
+        border: 4px solid #fbbf24;
+        box-shadow: 0 15px 40px rgba(185, 28, 28, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -78,70 +78,82 @@ def render_mode_select():
         overflow: hidden;
     }
     .mode-card::before {
-        content: '';
+        content: '福';
         position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
-        opacity: 0;
-        transition: opacity 0.5s;
+        top: -20px;
+        right: -20px;
+        font-size: 120px;
+        opacity: 0.05;
+        font-weight: bold;
+        color: #fbbf24;
+        transition: all 0.3s ease;
     }
     .mode-card:hover::before {
-        opacity: 1;
+        opacity: 0.1;
+        transform: rotate(10deg);
     }
     .mode-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 15px 40px rgba(220, 38, 38, 0.4), 0 0 30px rgba(251, 191, 36, 0.3);
-        border-color: rgba(251, 191, 36, 0.6);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(185, 28, 28, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        border-color: #fde68a;
     }
     .mode-card h2 {
-        font-size: 80px;
+        font-size: 75px;
         margin: 20px 0;
-        animation: float 3s ease-in-out infinite;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        animation: gentle-bounce 2s ease-in-out infinite;
+        position: relative;
+        z-index: 1;
     }
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+    @keyframes gentle-bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
     }
     .mode-card h3 {
-        color: #fbbf24;
-        font-size: 26px;
-        margin-bottom: 15px;
-        font-weight: bold;
-        text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
-    }
-    .mode-card .chinese-text {
-        color: #dc2626;
-        font-size: 18px;
-        font-weight: 600;
+        color: #fef3c7;
+        font-size: 28px;
         margin-bottom: 10px;
+        font-weight: 900;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        position: relative;
+        z-index: 1;
+        letter-spacing: 1px;
     }
     .mode-card p {
-        color: #e5e5e5;
-        font-size: 16px;
-        line-height: 1.6;
+        color: #fef3c7;
+        font-size: 15px;
+        line-height: 1.5;
         margin-bottom: 20px;
+        font-weight: 500;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 1;
     }
     .mode-card ul {
         text-align: left;
-        color: #fafafa;
-        font-size: 15px;
-        line-height: 2;
+        color: white;
+        font-size: 14px;
+        line-height: 1.9;
         list-style-type: none;
-        padding: 0;
+        padding: 0 10px;
+        margin: 15px 0;
+        position: relative;
+        z-index: 1;
+    }
+    .mode-card ul li {
+        font-weight: 600;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
     .mode-card ul li:before {
-        content: "🌟 ";
-        font-weight: bold;
+        content: "⭐ ";
+        font-size: 14px;
         margin-right: 8px;
     }
     </style>
     
     <div style='text-align: center; padding: 30px 20px;'>
-    <p style='font-size: 28px; color: #fbbf24; font-weight: 700; text-shadow: 0 0 15px rgba(251, 191, 36, 0.3);'>选择你的游戏模式 Choose Your Path</p>
-    <p style='font-size: 16px; color: #a1a1aa;'>Select how you want to play and start your learning journey! 开始你的学习之旅！</p>
+    <p style='font-size: 30px; color: #fbbf24; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); letter-spacing: 2px;'>Choose Your Journey</p>
+    <p style='font-size: 16px; color: #a1a1aa; font-weight: 500;'>Select your game mode and start learning!</p>
     </div>
     """, unsafe_allow_html=True)
     

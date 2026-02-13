@@ -1,8 +1,4 @@
 [server]
-# Disable error messages that expose internal details
-# This prevents data leaks and shows cleaner error messages to users
-enableErrorMessages = false
-
 # Enable CORS for multiplayer functionality
 enableCORS = true
 

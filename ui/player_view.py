@@ -480,63 +480,142 @@ def render_player_results():
     
     st.markdown("""
     <style>
-    .results-card {
-        background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
-        border-radius: 16px;
-        padding: 25px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        margin: 15px 0;
-        border: 3px solid rgba(251, 191, 36, 0.4);
+    .red-envelope {
+        background: linear-gradient(135deg, #b91c1c 0%, #dc2626 25%, #ef4444 50%, #dc2626 75%, #b91c1c 100%);
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 15px 45px rgba(185, 28, 28, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         text-align: center;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
+        max-width: 550px;
+        margin: 20px auto;
+        border: 4px solid #fbbf24;
+        position: relative;
+        overflow: hidden;
     }
-    .winner-card {
-        background: linear-gradient(135deg, #dc2626 0%, #fbbf24 50%, #dc2626 100%);
-        color: white;
-        border-radius: 16px;
-        padding: 30px;
-        box-shadow: 0 12px 35px rgba(220, 38, 38, 0.5);
-        text-align: center;
-        animation: glow 2s infinite;
-        border: 3px solid #fbbf24;
-        max-width: 500px;
-        margin: 15px auto;
-    }
-    @keyframes glow {
-        0%, 100% { box-shadow: 0 12px 35px rgba(220, 38, 38, 0.5); }
-        50% { box-shadow: 0 16px 45px rgba(251, 191, 36, 0.7); }
-    }
-    .winner-card h1 {
-        color: white !important;
-        font-size: 32px;
-        margin: 15px 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    .winner-card p {
-        font-size: 18px;
-        color: white;
-        margin: 10px 0;
-    }
-    .score-display {
-        font-size: 42px;
+    .red-envelope::before {
+        content: '福';
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        font-size: 180px;
+        opacity: 0.05;
         font-weight: bold;
-        color: white;
-        text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+        color: #fbbf24;
+    }
+    .red-envelope::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(251, 191, 36, 0.03) 10px,
+            rgba(251, 191, 36, 0.03) 20px
+        );
+        animation: shimmer 3s linear infinite;
+        pointer-events: none;
+    }
+    @keyframes shimmer {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    .red-envelope-title {
+        position: relative;
+        z-index: 1;
+        color: #fbbf24;
+        font-size: 36px;
+        font-weight: 900;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         margin: 15px 0;
+        letter-spacing: 2px;
+    }
+    .red-envelope-character {
+        position: relative;
+        z-index: 1;
+        font-size: 90px;
+        margin: 10px 0;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        animation: float-gentle 3s ease-in-out infinite;
+    }
+    @keyframes float-gentle {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-10px) scale(1.05); }
+    }
+    .red-envelope-name {
+        position: relative;
+        z-index: 1;
+        color: white;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 15px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    }
+    .red-envelope-score {
+        position: relative;
+        z-index: 1;
+        font-size: 52px;
+        font-weight: 900;
+        color: #fbbf24;
+        text-shadow: 0 0 20px rgba(251, 191, 36, 0.5), 3px 3px 6px rgba(0,0,0,0.5);
+        margin: 20px 0;
+        letter-spacing: 3px;
+    }
+    .red-envelope-message {
+        position: relative;
+        z-index: 1;
+        color: #fef3c7;
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 15px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+    .results-card {
+        background: linear-gradient(135deg, #b91c1c 0%, #dc2626 50%, #b91c1c 100%);
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 12px 35px rgba(185, 28, 28, 0.5);
+        margin: 20px auto;
+        border: 3px solid #fbbf24;
+        text-align: center;
+        max-width: 500px;
+        position: relative;
+        overflow: hidden;
+    }
+    .results-card::before {
+        content: '★';
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 40px;
+        opacity: 0.1;
+        color: #fbbf24;
+    }
+    .results-card::after {
+        content: '★';
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        font-size: 40px;
+        opacity: 0.1;
+        color: #fbbf24;
     }
     .rank-display {
         font-size: 36px;
         font-weight: bold;
         color: #fbbf24;
         margin: 15px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
     }
     .character-banner {
         font-size: 80px;
         line-height: 1;
         margin: 10px 0;
         animation: bounce 2s infinite;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
     }
     @keyframes bounce {
         0%, 100% { transform: translateY(0); }
@@ -545,71 +624,107 @@ def render_player_results():
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-        gap: 12px;
-        margin: 20px auto;
+        gap: 15px;
+        margin: 25px auto;
         max-width: 650px;
     }
     .stat-card {
-        background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(251, 191, 36, 0.1));
-        padding: 15px;
-        border-radius: 12px;
+        background: linear-gradient(135deg, #b91c1c 0%, #dc2626 50%, #b91c1c 100%);
+        padding: 18px 15px;
+        border-radius: 14px;
         text-align: center;
-        border: 2px solid rgba(251, 191, 36, 0.3);
+        border: 3px solid #fbbf24;
+        box-shadow: 0 8px 20px rgba(185, 28, 28, 0.4);
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 8px,
+            rgba(251, 191, 36, 0.03) 8px,
+            rgba(251, 191, 36, 0.03) 16px
+        );
+        pointer-events: none;
     }
     .stat-card:hover {
-        transform: translateY(-3px);
-        border-color: rgba(220, 38, 38, 0.6);
-        box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+        transform: translateY(-5px);
+        border-color: #fde68a;
+        box-shadow: 0 12px 30px rgba(185, 28, 28, 0.6);
     }
     .stat-value {
-        font-size: 28px;
-        font-weight: bold;
-        background: linear-gradient(135deg, #dc2626, #fbbf24);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 8px 0;
+        font-size: 32px;
+        font-weight: 900;
+        color: #fef3c7;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin: 10px 0;
+        position: relative;
+        z-index: 1;
     }
     .stat-label {
-        color: #e5e5e5;
-        font-size: 12px;
-        font-weight: 600;
+        color: #fef3c7;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+        position: relative;
+        z-index: 1;
     }
     .advice-box {
-        background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(251, 191, 36, 0.2));
-        border: 2px solid rgba(251, 191, 36, 0.5);
-        border-radius: 12px;
-        padding: 20px;
-        margin: 20px auto;
+        background: linear-gradient(135deg, #b91c1c 0%, #dc2626 50%, #b91c1c 100%);
+        border: 3px solid #fbbf24;
+        border-radius: 14px;
+        padding: 25px;
+        margin: 25px auto;
         text-align: left;
         max-width: 650px;
+        box-shadow: 0 10px 30px rgba(185, 28, 28, 0.5);
     }
     .advice-title {
-        color: #fbbf24;
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 12px;
+        color: #fef3c7;
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
     }
     .advice-text {
-        color: #fafafa;
+        color: white;
         font-size: 15px;
         line-height: 1.7;
+        font-weight: 500;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
     .detail-item {
-        background: rgba(255, 255, 255, 0.03);
-        padding: 12px;
-        margin: 8px 0;
-        border-radius: 8px;
-        border-left: 4px solid;
+        background: linear-gradient(135deg, rgba(185, 28, 28, 0.3) 0%, rgba(220, 38, 38, 0.3) 100%);
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border-left: 5px solid;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     .detail-item:hover {
-        background: rgba(255, 255, 255, 0.06);
-        transform: translateX(5px);
+        background: linear-gradient(135deg, rgba(185, 28, 28, 0.4) 0%, rgba(220, 38, 38, 0.4) 100%);
+        transform: translateX(8px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.3);
     }
-    .item-correct { border-left-color: #10b981; }
-    .item-incorrect { border-left-color: #ef4444; }
+    .item-correct { 
+        border-left-color: #fbbf24;
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(185, 28, 28, 0.2) 100%);
+    }
+    .item-incorrect { 
+        border-left-color: #7f1d1d;
+        background: linear-gradient(135deg, rgba(127, 29, 29, 0.3) 0%, rgba(185, 28, 28, 0.2) 100%);
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -681,25 +796,26 @@ def render_player_results():
         if rank == 1:
             st.balloons()
             st.markdown(f"""
-            <div class='winner-card'>
-            <div class='character-banner'>{character}</div>
-            <h1>🏆 Champion! 🏆</h1>
-            <p style='font-size: 18px; font-weight: 600;'>{character_name}</p>
-            <p style='font-size: 22px; font-weight: bold; margin: 15px 0;'>{player_rank['name']}</p>
-            <div class='score-display'>{player_rank['score']:,}</div>
-            <p style='font-size: 16px; margin-top: 15px;'>{message}</p>
+            <div class='red-envelope'>
+            <div class='red-envelope-character'>🏆</div>
+            <div class='red-envelope-title'>☆ CHAMPION ☆</div>
+            <div style='font-size: 20px; font-weight: 600; color: #fef3c7; margin: 10px 0;'>{character_name}</div>
+            <div class='red-envelope-name'>{player_rank['name']}</div>
+            <div class='red-envelope-score'>{player_rank['score']:,}</div>
+            <div class='red-envelope-message'>{message}</div>
+            <div style='margin-top: 20px; font-size: 14px; color: #fbbf24; opacity: 0.8;'>✨ PERFECT VICTORY ✨</div>
             </div>
             """, unsafe_allow_html=True)
         else:
             emoji = "🥈" if rank == 2 else "🥉" if rank == 3 else "⭐"
             st.markdown(f"""
             <div class='results-card'>
-            <div class='character-banner'>{character}</div>
-            <h2 style='font-size: 28px; color: #fbbf24;'>{emoji} {character_name}</h2>
-            <p style='font-size: 20px; color: #fafafa; margin: 15px 0; font-weight: bold;'>{player_rank['name']}</p>
+            <div class='character-banner'>{emoji}</div>
+            <h2 style='font-size: 28px; color: #fbbf24; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); margin: 15px 0;'>{character_name}</h2>
+            <p style='font-size: 22px; color: white; margin: 15px 0; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);'>{player_rank['name']}</p>
             <div class='rank-display'>Rank #{rank}</div>
-            <p style='font-size: 36px; font-weight: bold; color: #fbbf24; margin: 15px 0;'>{player_rank['score']:,}</p>
-            <p style='color: #e5e5e5; font-size: 16px; margin-top: 15px;'>{message}</p>
+            <p style='font-size: 40px; font-weight: bold; color: #fbbf24; margin: 15px 0; text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);'>{player_rank['score']:,}</p>
+            <p style='color: #fef3c7; font-size: 16px; margin-top: 15px; font-weight: 600; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);'>{message}</p>
             </div>
             """, unsafe_allow_html=True)
     
@@ -707,8 +823,9 @@ def render_player_results():
     
     # Personal Performance Statistics
     st.markdown("""
-    <div style='text-align: center; margin: 20px 0;'>
-    <h2 style='color: #fbbf24; font-size: 26px;'>📊 Your Performance</h2>
+    <div style='text-align: center; margin: 30px 0 20px 0;'>
+    <h2 style='color: #fef3c7; font-size: 30px; font-weight: 900; text-shadow: 3px 3px 6px rgba(0,0,0,0.5); letter-spacing: 2px;'>📊 YOUR PERFORMANCE 📊</h2>
+    <p style='color: #fbbf24; font-size: 15px; margin-top: 10px;'>Detailed breakdown of your results</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -772,7 +889,7 @@ def render_player_results():
     
     st.markdown(f"""
     <div class='advice-box'>
-        <div class='advice-title'>🦉 Personal Advice</div>
+        <div class='advice-title'>💡 PERSONAL ADVICE</div>
         <div class='advice-text'>
         {'<br><br>'.join(advice_parts)}
         </div>
@@ -780,8 +897,8 @@ def render_player_results():
     """, unsafe_allow_html=True)
     
     # Detailed Answer Breakdown
-    with st.expander("📝 View All Your Answers", expanded=False):
-        st.markdown("<h3 style='color: #fbbf24;'>Question Analysis</h3>", unsafe_allow_html=True)
+    with st.expander("📝 VIEW ALL YOUR ANSWERS", expanded=False):
+        st.markdown("<h3 style='color: #fef3c7; font-size: 24px; font-weight: 900; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);'>QUESTION ANALYSIS</h3>", unsafe_allow_html=True)
         
         for ans in player_answers:
             q_num = ans.get('question_num', 0)
