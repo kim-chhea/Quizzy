@@ -57,9 +57,6 @@ def render_quiz():
         "quiz_data", {"questions": [], "current_q": 0, "score": 0, "history": []}
     )
 
-    # Debug: show num questions
-    st.write(f"Debug: Number of questions set to {settings['num_questions']}")
-
     # Initialize full question set if not present
     if not quiz_data["questions"]:
         quiz_data["questions"] = initialize_quiz(df, settings)

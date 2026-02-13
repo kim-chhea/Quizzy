@@ -1,0 +1,25 @@
+[server]
+# Disable error messages that expose internal details
+# This prevents data leaks and shows cleaner error messages to users
+enableErrorMessages = false
+
+# Enable CORS for multiplayer functionality
+enableCORS = true
+
+# Allow WebSocket compression for better performance
+enableWebsocketCompression = true
+
+[client]
+# Show cleaner error messages instead of full tracebacks
+showErrorDetails = false
+
+# Automatically refresh when file changes are detected (for development)
+toolbarMode = "minimal"
+
+[browser]
+# Automatically open browser on start (disable for production)
+gatherUsageStats = false
+
+[theme]
+# Optional: Configure theme colors
+base = "dark"

@@ -271,9 +271,16 @@ def render_player_lobby():
         if st.button("🔄 Refresh", use_container_width=True):
             st.rerun()
     
-    # Leave button
     with col2:
-        if st.button("🚪 Leave Game", use_container_width=True):
+        auto_refresh = st.checkbox("Auto", value=False, help="Auto-refresh every 2s")
+        if auto_refresh:
+            time.sleep(2)
+            st.rerun()
+    
+    st.markdown("---")
+    
+    # Leave button
+    if st.button("🚪 Leave Game", use_container_width=True):
             if "player_id" in st.session_state:
                 player_id = st.session_state.player_id
                 if player_id in session.players:
@@ -359,10 +366,6 @@ def render_player_game():
     from multiplayer.session_manager import get_global_session_manager
     session_manager = get_global_session_manager("v2.0")
     
-    # Debug output
-    st.info(f"🔍 DEBUG: Session ID = {st.session_state.current_session_id}")
-    st.info(f"🔍 DEBUG: Session Manager = {type(session_manager)}")
-    
     session = session_manager.get_session(st.session_state.current_session_id)
     if not session:
         st.error("Session expired!")
@@ -429,9 +432,6 @@ def render_player_game():
                     st.error("Session object is invalid!")
                 else:
                     try:
-                        # Debug info
-                        st.write(f"DEBUG: player_id={player_id}, question={current_q}, answer={selected_answer[:20] if len(selected_answer) > 20 else selected_answer}")
-                        
                         success = session.submit_answer(player_id, current_q, selected_answer)
                         if success:
                             # Show feedback

@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 from quiz.session import initialize_quiz
 from multiplayer.qr_generator import generate_qr_code, generate_join_url
 from ui.leaderboard import render_leaderboard, render_mini_leaderboard
@@ -360,7 +361,7 @@ def render_host_lobby():
             # Auto-refresh toggle
             auto_refresh = st.checkbox("Auto-refresh", value=False)
             if auto_refresh:
-                import time
+
                 time.sleep(2)
                 st.rerun()
         
@@ -659,7 +660,7 @@ def render_host_results():
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("🔄 New Game", type="primary", use_container_width=True):
-            st.session_state.session_manager.close_session(session.session_id)
+            session_manager.close_session(session.session_id)
             st.session_state.page = "host_setup"
             st.rerun()
     
@@ -669,7 +670,7 @@ def render_host_results():
     
     with col3:
         if st.button("🏠 Home", use_container_width=True):
-            st.session_state.session_manager.close_session(session.session_id)
+            session_manager.close_session(session.session_id)
             st.session_state.page = "mode_select"
             st.rerun()
 
