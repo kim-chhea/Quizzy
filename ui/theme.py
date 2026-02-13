@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 
 
 def inject_ui():
-    # Modern UI CSS with Chinese Vibe
+    # Modern UI CSS with Chinese Vibe - Enhanced for teens and adults
     css = """
     <style>
       :root{
@@ -19,73 +19,195 @@ def inject_ui():
         --chinese-red: #dc2626;
         --chinese-gold: #fbbf24;
         --chinese-black: #000000;
+        --dragon-purple: #8b5cf6;
+        --phoenix-orange: #f97316;
       }
-      /* Global */
-      body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--text); background: var(--bg); }
-      .stApp { background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2a1810 100%); min-height: 100vh; }
-      h1 { text-align: center; font-weight: 700; background: linear-gradient(135deg, var(--chinese-red), var(--chinese-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+      
+      /* Global with Chinese patterns */
+      body { 
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif; 
+        color: var(--text); 
+        background: var(--bg);
+      }
+      
+      .stApp { 
+        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2a1810 100%);
+        min-height: 100vh;
+        position: relative;
+      }
+      
+      /* Add subtle Chinese pattern overlay */
+      .stApp::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+          repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(220, 38, 38, 0.03) 50px, rgba(220, 38, 38, 0.03) 51px),
+          repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(251, 191, 36, 0.03) 50px, rgba(251, 191, 36, 0.03) 51px);
+        pointer-events: none;
+        z-index: 0;
+      }
+      
+      /* Elegant Chinese gradient text */
+      h1 { 
+        text-align: center; 
+        font-weight: 700; 
+        background: linear-gradient(135deg, var(--chinese-red), var(--chinese-gold), var(--phoenix-orange)); 
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+      }
 
-      /* Containers */
+      /* Containers with Chinese lantern inspired design */
       .app-header { margin: 10px 0 18px; }
-      .quiz-container { max-width: 1000px; margin: 8px auto 24px; }
-      .question-card { padding: 20px; border-radius: 16px; background: linear-gradient(135deg, var(--card) 0%, rgba(26,26,26,0.8) 100%); box-shadow: 0 8px 32px rgba(0,0,0,0.3); margin-bottom: 18px; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; }
-      .question-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+      .quiz-container { max-width: 1000px; margin: 8px auto 24px; position: relative; z-index: 1; }
+      
+      .question-card { 
+        padding: 20px; 
+        border-radius: 16px; 
+        background: linear-gradient(135deg, var(--card) 0%, rgba(26,26,26,0.8) 100%); 
+        box-shadow: 0 8px 32px rgba(220, 38, 38, 0.2), 0 0 20px rgba(251, 191, 36, 0.1); 
+        margin-bottom: 18px; 
+        border: 2px solid rgba(251, 191, 36, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .question-card::before {
+        content: '龙';
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        font-size: 120px;
+        opacity: 0.03;
+        font-weight: bold;
+        color: var(--chinese-gold);
+        pointer-events: none;
+      }
+      
+      .question-card:hover { 
+        transform: translateY(-4px); 
+        box-shadow: 0 12px 40px rgba(220, 38, 38, 0.3), 0 0 30px rgba(251, 191, 36, 0.2); 
+        border-color: rgba(251, 191, 36, 0.4);
+      }
+      
       .question-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
       .progress-area { color: var(--muted); font-size: 15px; }
 
-      /* Header / steps */
-      .app-title { font-size: 32px; font-weight: 800; color: var(--text); text-align:center; margin-bottom: 6px }
-      .step-progress { width: 80%; height: 10px; background: rgba(255,255,255,0.04); border-radius: 8px; margin: 10px auto 18px; overflow: hidden }
-      .step-progress > .bar { height: 100%; width: 30%; background: linear-gradient(90deg,var(--chinese-gold),var(--chinese-red)); border-radius: 8px }
+      /* Header / steps with dragon motif */
+      .app-title { 
+        font-size: 32px; 
+        font-weight: 800; 
+        color: var(--text); 
+        text-align:center; 
+        margin-bottom: 6px;
+        text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+      }
+      
+      .step-progress { 
+        width: 80%; 
+        height: 10px; 
+        background: rgba(255,255,255,0.04); 
+        border-radius: 8px; 
+        margin: 10px auto 18px; 
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+      }
+      
+      .step-progress > .bar { 
+        height: 100%; 
+        width: 30%; 
+        background: linear-gradient(90deg, var(--chinese-red), var(--chinese-gold), var(--phoenix-orange)); 
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        animation: shimmer 2s infinite;
+      }
+      
+      @keyframes shimmer {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+      }
 
-      /* Upload card */
+      /* Upload card with Chinese paper texture */
       .upload-card { 
         padding: 30px; 
         border-radius: 16px; 
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08)); 
-        border: 2px solid rgba(102, 126, 234, 0.2);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.12), rgba(251, 191, 36, 0.12)); 
+        border: 2px solid rgba(251, 191, 36, 0.3);
+        box-shadow: 0 8px 24px rgba(220, 38, 38, 0.2);
         margin: 20px 0;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
       }
+      
+      .upload-card::after {
+        content: '学';
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        font-size: 80px;
+        opacity: 0.05;
+        font-weight: bold;
+        color: var(--chinese-gold);
+      }
+      
       .upload-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        box-shadow: 0 12px 32px rgba(220, 38, 38, 0.3);
+        border-color: rgba(251, 191, 36, 0.5);
       }
+      
       .upload-drop { 
-        border: 3px dashed rgba(102, 126, 234, 0.3); 
+        border: 3px dashed rgba(251, 191, 36, 0.4); 
         padding: 30px; 
         border-radius: 12px; 
         text-align: center; 
         color: var(--muted);
-        background: rgba(102, 126, 234, 0.05);
+        background: rgba(220, 38, 38, 0.05);
         transition: all 0.3s ease;
       }
+      
       .upload-drop:hover {
-        border-color: rgba(102, 126, 234, 0.6);
-        background: rgba(102, 126, 234, 0.1);
+        border-color: rgba(251, 191, 36, 0.7);
+        background: rgba(251, 191, 36, 0.1);
       }
+      
       .upload-drop .hint { margin-top: 10px; color: var(--muted); }
-      .chinese-welcome { text-align: center; font-size: 20px; color: var(--chinese-gold); margin-bottom: 20px; font-weight: 600; }
+      .chinese-welcome { 
+        text-align: center; 
+        font-size: 20px; 
+        color: var(--chinese-gold); 
+        margin-bottom: 20px; 
+        font-weight: 600;
+        text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+      }
 
       /* Preview table look */
       .stDataFrame table { border-collapse: collapse; }
 
-      /* Input fields */
+      /* Input fields with Chinese flair */
       .stTextInput input, .stNumberInput input, .stSelectbox select {
         background: rgba(26, 26, 26, 0.8) !important;
         color: var(--text) !important;
-        border: 2px solid rgba(102, 126, 234, 0.3) !important;
+        border: 2px solid rgba(251, 191, 36, 0.3) !important;
         border-radius: 12px !important;
         padding: 14px !important;
         font-size: 16px !important;
         transition: all 0.3s ease !important;
       }
+      
       .stTextInput input:focus, .stNumberInput input:focus, .stSelectbox select:focus {
-        border-color: rgba(102, 126, 234, 0.8) !important;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+        border-color: rgba(251, 191, 36, 0.8) !important;
+        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2), 0 0 15px rgba(251, 191, 36, 0.3) !important;
         outline: none !important;
       }
+      
       .stTextInput label, .stNumberInput label, .stSelectbox label {
         color: var(--text) !important;
         font-weight: 600 !important;
@@ -93,74 +215,116 @@ def inject_ui():
         margin-bottom: 8px !important;
       }
 
-      /* Large start button */
+      /* Large start button with dragon energy */
       .start-btn > button {
-        background: linear-gradient(180deg,var(--chinese-red),var(--chinese-gold));
+        background: linear-gradient(135deg, var(--chinese-red), var(--chinese-gold), var(--phoenix-orange));
         padding: 14px 22px;
         font-size: 18px;
         border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
       }
 
-      /* Buttons (primary styled Chinese red/gold) */
+      /* Buttons with Chinese imperial style */
       .stButton>button, button, .stFormSubmitButton button {
         background: linear-gradient(135deg, var(--chinese-red), var(--chinese-gold)) !important;
         color: white !important;
         border-radius: 12px !important;
         padding: 14px 24px !important;
         font-weight: 600 !important;
-        border: none !important;
-        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4) !important;
+        border: 2px solid rgba(251, 191, 36, 0.3) !important;
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4), 0 0 15px rgba(251, 191, 36, 0.2) !important;
         transition: all 0.3s ease !important;
         position: relative !important;
         overflow: hidden !important;
         font-size: 16px !important;
       }
+      
+      .stButton>button::before, button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+      
+      .stButton>button:hover::before, button:hover::before {
+        left: 100%;
+      }
+      
       .stButton>button:hover, button:hover, .stFormSubmitButton button:hover { 
         transform: translateY(-3px) !important; 
-        box-shadow: 0 10px 28px rgba(220, 38, 38, 0.5) !important;
-        background: linear-gradient(135deg, var(--chinese-gold), var(--chinese-red)) !important;
+        box-shadow: 0 10px 28px rgba(220, 38, 38, 0.5), 0 0 25px rgba(251, 191, 36, 0.3) !important;
+        background: linear-gradient(135deg, var(--chinese-gold), var(--phoenix-orange), var(--chinese-red)) !important;
       }
+      
       .stButton>button:active, button:active { 
         transform: translateY(0px) !important; 
       }
 
-      /* Processing state: show spinner and prevent further clicks */
+      /* Processing state */
       .stButton>button.processing, button.processing {
         cursor: wait;
         opacity: 0.9;
         pointer-events: none;
       }
+      
       .stButton>button.processing::after, button.processing::after {
         content: '';
         display: inline-block;
         width: 16px;
         height: 16px;
         border: 3px solid rgba(255,255,255,0.3);
-        border-top-color: transparent;
+        border-top-color: white;
         border-radius: 50%;
         margin-left: 10px;
         vertical-align: middle;
         animation: spin 0.8s linear infinite;
       }
-      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      
+      @keyframes spin { 
+        from { transform: rotate(0deg); } 
+        to { transform: rotate(360deg); } 
+      }
 
-      /* Radio/options spacing */
+      /* Radio/options with lantern style */
       .stRadio>div, .stRadio>label { 
         margin-bottom: 10px; 
       }
       .stRadio > div[role="radiogroup"] > label {
-        background: rgba(102, 126, 234, 0.1);
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(251, 191, 36, 0.1));
         padding: 15px;
         border-radius: 10px;
-        border: 2px solid rgba(102, 126, 234, 0.2);
+        border: 2px solid rgba(251, 191, 36, 0.3);
         margin: 8px 0;
         cursor: pointer;
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
       }
+      
+      .stRadio > div[role="radiogroup"] > label::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.2), transparent);
+        transition: left 0.5s;
+      }
+      
+      .stRadio > div[role="radiogroup"] > label:hover::before {
+        left: 100%;
+      }
+      
       .stRadio > div[role="radiogroup"] > label:hover {
-        background: rgba(102, 126, 234, 0.2);
-        border-color: rgba(102, 126, 234, 0.5);
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(251, 191, 36, 0.2));
+        border-color: rgba(251, 191, 36, 0.6);
         transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(251, 191, 36, 0.2);
       }
 
       /* Larger readable text */

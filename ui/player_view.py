@@ -477,18 +477,18 @@ def render_player_game():
 
 
 def render_player_results():
-    """Render final results for player"""
+    """Render final results for player with detailed personal stats"""
     inject_ui()
     
     st.markdown("""
     <style>
     .results-card {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
         border-radius: 20px;
         padding: 40px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         margin: 20px 0;
-        border: 2px solid rgba(102, 126, 234, 0.3);
+        border: 3px solid rgba(251, 191, 36, 0.4);
         text-align: center;
     }
     .winner-card {
@@ -499,6 +499,7 @@ def render_player_results():
         box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
         text-align: center;
         animation: glow 2s infinite;
+        border: 3px solid #FFD700;
     }
     @keyframes glow {
         0%, 100% { box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5); }
@@ -528,6 +529,80 @@ def render_player_results():
         color: #fbbf24;
         margin: 20px 0;
     }
+    .character-banner {
+        font-size: 120px;
+        line-height: 1;
+        margin: 20px 0;
+        animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 15px;
+        margin: 25px 0;
+    }
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        border: 2px solid rgba(251, 191, 36, 0.3);
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(251, 191, 36, 0.6);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .stat-value {
+        font-size: 36px;
+        font-weight: bold;
+        color: #fbbf24;
+        margin: 10px 0;
+    }
+    .stat-label {
+        color: #a1a1aa;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .advice-box {
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(251, 191, 36, 0.2));
+        border: 2px solid rgba(251, 191, 36, 0.5);
+        border-radius: 15px;
+        padding: 25px;
+        margin: 25px 0;
+        text-align: left;
+    }
+    .advice-title {
+        color: #fbbf24;
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .advice-text {
+        color: #fafafa;
+        font-size: 16px;
+        line-height: 1.8;
+    }
+    .detail-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+    }
+    .detail-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        transform: translateX(5px);
+    }
+    .item-correct { border-left-color: #10b981; }
+    .item-incorrect { border-left-color: #ef4444; }
     </style>
     """, unsafe_allow_html=True)
     
@@ -554,27 +629,186 @@ def render_player_results():
             player_rank = player
             break
     
+    # Get player's detailed data
+    player_data = session.players.get(player_id, {})
+    player_answers = player_data.get('answers', [])
+    total_questions = len(session.questions)
+    
+    # Calculate detailed statistics
+    correct_count = sum(1 for ans in player_answers if ans.get('is_correct', False))
+    incorrect_count = len(player_answers) - correct_count
+    accuracy = (correct_count / len(player_answers) * 100) if len(player_answers) > 0 else 0
+    avg_time = sum(ans.get('time_taken', 0) for ans in player_answers) / len(player_answers) if len(player_answers) > 0 else 0
+    total_time = sum(ans.get('time_taken', 0) for ans in player_answers)
+    
+    # Character selection based on performance
     if player_rank:
         rank = player_rank["rank"]
+        
+        # Select character based on rank and performance
+        if rank == 1:
+            character = "🐉"  # Dragon - ultimate champion
+            character_name = "龙 (Lóng) - Dragon Spirit"
+            message = "You've achieved mastery! The dragon's wisdom flows through you!"
+        elif rank == 2:
+            character = "🦅"  # Phoenix
+            character_name = "凤凰 (Fènghuáng) - Phoenix Rising"
+            message = "Outstanding! Like the phoenix, you're destined for greatness!"
+        elif rank == 3:
+            character = "🐯"  # Tiger
+            character_name = "虎 (Hǔ) - Tiger Power"
+            message = "Excellent work! The tiger's strength is with you!"
+        elif accuracy >= 80:
+            character = "🐼"  # Panda
+            character_name = "熊猫 (Xióngmāo) - Wise Panda"
+            message = "Great accuracy! The panda's wisdom guides your path!"
+        elif accuracy >= 60:
+            character = "🦊"  # Fox
+            character_name = "狐狸 (Húlí) - Clever Fox"
+            message = "Good progress! The fox's cleverness shines in you!"
+        else:
+            character = "🐇"  # Rabbit
+            character_name = "兔 (Tù) - Swift Rabbit"
+            message = "Keep going! The rabbit's speed and determination will lead you forward!"
+        
         if rank == 1:
             st.balloons()
             st.markdown(f"""
             <div class='winner-card'>
-            <h1>🏆 WINNER! 🏆</h1>
-            <p>Congratulations, <strong>{player_rank['name']}</strong>!</p>
-            <div class='score-display'>{player_rank['score']:,} pts</div>
-            <p>You are the champion! 🎊</p>
+            <div class='character-banner'>{character}</div>
+            <h1>🏆 冒险者之冠 🏆</h1>
+            <p style='font-size: 20px; opacity: 0.9;'>{character_name}</p>
+            <p style='font-size: 26px; font-weight: bold; margin: 20px 0;'>{player_rank['name']}</p>
+            <div class='score-display'>{player_rank['score']:,} 分</div>
+            <p style='font-size: 18px; margin-top: 20px;'>{message}</p>
             </div>
             """, unsafe_allow_html=True)
         else:
             emoji = "🥈" if rank == 2 else "🥉" if rank == 3 else "⭐"
             st.markdown(f"""
             <div class='results-card'>
-            <h2 style='font-size: 36px; color: #667eea;'>Great Job! {emoji}</h2>
-            <p style='font-size: 22px; color: #fafafa; margin: 20px 0;'><strong>{player_rank['name']}</strong></p>
-            <div class='rank-display'>Rank #{rank}</div>
-            <p style='font-size: 42px; font-weight: bold; color: #fbbf24; margin: 20px 0;'>{player_rank['score']:,} pts</p>
-            <p style='color: #a1a1aa; font-size: 16px;'>Keep practicing to reach the top!</p>
+            <div class='character-banner'>{character}</div>
+            <h2 style='font-size: 36px; color: #fbbf24;'>{emoji} {character_name} {emoji}</h2>
+            <p style='font-size: 24px; color: #fafafa; margin: 20px 0; font-weight: bold;'>{player_rank['name']}</p>
+            <div class='rank-display'># {rank}</div>
+            <p style='font-size: 42px; font-weight: bold; color: #fbbf24; margin: 20px 0;'>{player_rank['score']:,} 点</p>
+            <p style='color: #e5e5e5; font-size: 18px; margin-top: 20px;'>{message}</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    # Personal Performance Statistics
+    st.markdown("""
+    <div style='text-align: center; margin: 30px 0;'>
+    <h2 style='color: #fbbf24; font-size: 32px;'>📊 你的成绩分析 Your Performance</h2>
+    <p style='color: #a1a1aa; font-size: 16px;'>Detailed breakdown of your quiz results</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Statistics Grid
+    st.markdown(f"""
+    <div class='stats-grid'>
+        <div class='stat-card'>
+            <div style='font-size: 48px;'>✅</div>
+            <div class='stat-value'>{correct_count}</div>
+            <div class='stat-label'>Correct</div>
+        </div>
+        <div class='stat-card'>
+            <div style='font-size: 48px;'>❌</div>
+            <div class='stat-value'>{incorrect_count}</div>
+            <div class='stat-label'>Incorrect</div>
+        </div>
+        <div class='stat-card'>
+            <div style='font-size: 48px;'>🎯</div>
+            <div class='stat-value'>{accuracy:.1f}%</div>
+            <div class='stat-label'>Accuracy</div>
+        </div>
+        <div class='stat-card'>
+            <div style='font-size: 48px;'>⏱️</div>
+            <div class='stat-value'>{avg_time:.1f}s</div>
+            <div class='stat-label'>Avg Time</div>
+        </div>
+        <div class='stat-card'>
+            <div style='font-size: 48px;'>📈</div>
+            <div class='stat-value'>{len(player_answers)}/{total_questions}</div>
+            <div class='stat-label'>Completed</div>
+        </div>
+        <div class='stat-card'>
+            <div style='font-size: 48px;'>⏰</div>
+            <div class='stat-value'>{total_time:.0f}s</div>
+            <div class='stat-label'>Total Time</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Personalized Advice
+    advice_parts = []
+    
+    if accuracy >= 90:
+        advice_parts.append("✨ **卓越表现 Excellent!** You're mastering the material! Keep up this outstanding work.")
+    elif accuracy >= 75:
+        advice_parts.append("💪 **很好 Very Good!** You have a strong understanding. Focus on the questions you missed.")
+    elif accuracy >= 60:
+        advice_parts.append("💡 **不错 Good Progress!** You're on the right track. Review the incorrect answers to improve.")
+    else:
+        advice_parts.append("🌱 **努力 Keep Going!** Learning takes practice. Don't give up! Review the material and try again.")
+    
+    if avg_time < 5:
+        advice_parts.append("⚡ **闪电速度 Lightning Fast!** Great reflexes! Make sure to balance speed with accuracy.")
+    elif avg_time < 10:
+        advice_parts.append("🏃 **速度好 Quick Thinker!** Your response time is excellent!")
+    elif avg_time > 20:
+        advice_parts.append("🧘 **仔细思考 Thoughtful Approach:** You take time to think. Try to build confidence for faster responses.")
+    
+    if correct_count >= total_questions * 0.8:
+        advice_parts.append("🎓 **学习能手 Learning Master:** Challenge yourself with harder materials!")
+    
+    st.markdown(f"""
+    <div class='advice-box'>
+        <div class='advice-title'>🦉 个性化建议 Personal Advice for You</div>
+        <div class='advice-text'>
+        {'<br><br>'.join(advice_parts)}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Detailed Answer Breakdown
+    with st.expander("📝 查看所有答案 View All Your Answers", expanded=False):
+        st.markdown("<h3 style='color: #fbbf24;'>Question by Question Analysis</h3>", unsafe_allow_html=True)
+        
+        for ans in player_answers:
+            q_num = ans.get('question_num', 0)
+            question = session.questions[q_num] if q_num < len(session.questions) else {}
+            is_correct = ans.get('is_correct', False)
+            time_taken = ans.get('time_taken', 0)
+            points = ans.get('points', 0)
+            
+            q_text = question.get('question', 'N/A')
+            correct_ans = question.get('correct_answer', 'N/A')
+            user_ans = ans.get('answer', 'N/A')
+            
+            status_icon = "✅" if is_correct else "❌"
+            status_class = "item-correct" if is_correct else "item-incorrect"
+            
+            st.markdown(f"""
+            <div class='detail-item {status_class}'>
+                <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;'>
+                    <strong style='color: #fbbf24; font-size: 18px;'>{status_icon} Question {q_num + 1}</strong>
+                    <div>
+                        <span style='background: rgba(102, 126, 234, 0.3); padding: 4px 12px; border-radius: 12px; margin-right: 8px;'>
+                            ⏱️ {time_taken:.1f}s
+                        </span>
+                        <span style='background: rgba(251, 191, 36, 0.3); padding: 4px 12px; border-radius: 12px;'>
+                            💰 {points:,} pts
+                        </span>
+                    </div>
+                </div>
+                <div style='color: #e5e5e5; margin: 8px 0; font-size: 16px;'><strong>Q:</strong> {q_text}</div>
+                <div style='color: {'#10b981' if is_correct else '#ef4444'}; margin: 4px 0; font-size: 15px;'>
+                    <strong>你的答案 Your Answer:</strong> {user_ans}
+                </div>
+                {f"<div style='color: #10b981; margin: 4px 0; font-size: 15px;'><strong>✅ 正确答案 Correct Answer:</strong> {correct_ans}</div>" if not is_correct else "<div style='color: #10b981; margin: 4px 0; font-size: 15px;'>✨ Perfect! 完美!</div>"}
             </div>
             """, unsafe_allow_html=True)
     

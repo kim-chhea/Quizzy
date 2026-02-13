@@ -58,39 +58,68 @@ def render_mode_select():
     from ui.theme import inject_ui
     inject_ui()
     
-    st.markdown("<div class='app-title'>🌟 Quizzy - Your Personal Quiz Generator 🎯</div>", unsafe_allow_html=True)
+    st.markdown("<div class='app-title'>🐉 Quizzy - 你的个人测验生成器 🏮</div>", unsafe_allow_html=True)
     
     st.markdown("""
     <style>
     .mode-card {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
         border-radius: 20px;
         padding: 30px;
         text-align: center;
         min-height: 380px;
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 3px solid rgba(251, 191, 36, 0.3);
+        box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3), 0 0 20px rgba(251, 191, 36, 0.1);
         transition: all 0.4s ease;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+    .mode-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+    .mode-card:hover::before {
+        opacity: 1;
     }
     .mode-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        border-color: rgba(102, 126, 234, 0.6);
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(220, 38, 38, 0.4), 0 0 30px rgba(251, 191, 36, 0.3);
+        border-color: rgba(251, 191, 36, 0.6);
     }
     .mode-card h2 {
-        font-size: 64px;
+        font-size: 80px;
         margin: 20px 0;
+        animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
     }
     .mode-card h3 {
-        color: #667eea;
+        color: #fbbf24;
         font-size: 26px;
         margin-bottom: 15px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+    }
+    .mode-card .chinese-text {
+        color: #dc2626;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
     }
     .mode-card p {
-        color: #a1a1aa;
+        color: #e5e5e5;
         font-size: 16px;
         line-height: 1.6;
         margin-bottom: 20px;
@@ -104,16 +133,15 @@ def render_mode_select():
         padding: 0;
     }
     .mode-card ul li:before {
-        content: "✓ ";
-        color: #fbbf24;
+        content: "🌟 ";
         font-weight: bold;
         margin-right: 8px;
     }
     </style>
     
     <div style='text-align: center; padding: 30px 20px;'>
-    <p style='font-size: 24px; color: #fbbf24; font-weight: 600;'>Choose Your Game Mode</p>
-    <p style='font-size: 16px; color: #a1a1aa;'>Select how you want to play and start learning!</p>
+    <p style='font-size: 28px; color: #fbbf24; font-weight: 700; text-shadow: 0 0 15px rgba(251, 191, 36, 0.3);'>选择你的游戏模式 Choose Your Path</p>
+    <p style='font-size: 16px; color: #a1a1aa;'>Select how you want to play and start your learning journey! 开始你的学习之旅！</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -123,8 +151,8 @@ def render_mode_select():
         st.markdown("""
         <div class='mode-card'>
         <div>
-        <h2>📚</h2>
-        <h3>Solo Practice</h3>
+        <h2>�</h2>
+        <div class='chinese-text'>独自练习 Solo Practice</div>
         <p>Practice at your own pace with customizable quizzes</p>
         <ul>
         <li>Self-paced learning</li>
@@ -144,8 +172,8 @@ def render_mode_select():
         st.markdown("""
         <div class='mode-card'>
         <div>
-        <h2>🎮</h2>
-        <h3>Host Multiplayer</h3>
+        <h2>🐉</h2>
+        <div class='chinese-text'>主持多人 Host Multiplayer</div>
         <p>Create a game session and compete with friends!</p>
         <ul>
         <li>Real-time competition</li>
@@ -165,8 +193,8 @@ def render_mode_select():
         st.markdown("""
         <div class='mode-card'>
         <div>
-        <h2>👥</h2>
-        <h3>Join Game</h3>
+        <h2>🦊</h2>
+        <div class='chinese-text'>加入游戏 Join Game</div>
         <p>Join an existing game with a PIN and compete!</p>
         <ul>
         <li>Quick join with PIN</li>
