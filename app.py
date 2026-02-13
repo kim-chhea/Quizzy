@@ -58,7 +58,7 @@ def render_mode_select():
     from ui.theme import inject_ui
     inject_ui()
     
-    st.markdown("<div class='app-title'>🐉 Quizzy - 你的个人测验生成器 🏮</div>", unsafe_allow_html=True)
+    st.markdown("<div class='app-title'>🐉 Quizzy - Quiz Generator 🏮</div>", unsafe_allow_html=True)
     
     st.markdown("""
     <style>
